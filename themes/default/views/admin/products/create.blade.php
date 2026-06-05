@@ -356,16 +356,16 @@
                                     <select id="nodes" style="width:100%"
                                         class="custom-select @error('nodes') is-invalid @enderror" name="nodes[]"
                                         multiple="multiple" autocomplete="off">
-                                        @foreach ($locations as $location)
-                                            <optgroup label="{{ $location->name }}">
-                                                @foreach ($location->nodes as $node)
-                                                    <option
-                                                        @if (isset($product)) @if ($product->nodes->contains('id', $node->id)) selected @endif
-                                                        @endif
-                                                        value="{{ $node->id }}">{{ $node->name }}</option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endforeach
+                                      @foreach ($nodes as $nodeItem)
+                                        <option
+                                          value="{{ $nodeItem->id }}"
+                                          @if(isset($product) && $product->nodes->contains('id', $nodeItem->id))
+                                            selected
+                                          @endif
+                                        >
+                                          {{ $nodeItem->name }}
+                                        </option>
+                                      @endforeach
                                     </select>
                                     @error('nodes')
                                         <div class="text-danger">
@@ -391,16 +391,25 @@
                                     <select id="eggs" style="width:100%"
                                         class="custom-select @error('eggs') is-invalid @enderror" name="eggs[]"
                                         multiple="multiple" autocomplete="off">
-                                        @foreach ($nests as $nest)
-                                            <optgroup label="{{ $nest->name }}">
-                                                @foreach ($nest->eggs as $egg)
-                                                    <option
-                                                        @if (isset($product)) @if ($product->eggs->contains('id', $egg->id)) selected @endif
-                                                        @endif
-                                                        value="{{ $egg->id }}">{{ $egg->name }}</option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endforeach
+                                      @foreach ($eggs as $tag => $items)
+                                        <optgroup label="{{ ucfirst($tag) }}">
+
+                                          @foreach ($items as $item)
+                                            @php $egg = $item['egg']; @endphp
+
+                                            <option
+                                              value="{{ $egg->id }}"
+                                              @if(isset($product) && $product->eggs->contains('id', $egg->id))
+                                                selected
+                                              @endif
+                                            >
+                                              {{ $egg->name }}
+                                            </option>
+
+                                          @endforeach
+
+                                        </optgroup>
+                                      @endforeach
                                     </select>
                                     @error('eggs')
                                         <div class="text-danger">

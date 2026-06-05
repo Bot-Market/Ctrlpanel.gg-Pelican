@@ -148,16 +148,8 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{{ __('Locations') }}</td>
-                                        <td>{{ $counters['locations'] }}</td>
-                                    </tr>
-                                    <tr>
                                         <td>{{ __('Nodes') }}</td>
                                         <td>{{ $nodes->count() }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{{ __('Nests') }}</td>
-                                        <td>{{ $counters['nests'] }}</td>
                                     </tr>
                                     <tr>
                                         <td>{{ __('Eggs') }}</td>

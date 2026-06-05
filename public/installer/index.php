@@ -6,6 +6,12 @@ error_reporting(E_ALL);
 
 session_start();
 
+//session_unset();
+//session_destroy();
+
+session_start();
+
+
 if (file_exists('../../install.lock')) {
     exit("The installation has been completed already. Please delete the File 'install.lock' to re-run");
 }

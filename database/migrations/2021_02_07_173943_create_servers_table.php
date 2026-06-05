@@ -22,7 +22,6 @@ return new class extends Migration
             $table->integer('pterodactyl_id')->nullable();
             $table->foreignId('user_id')->references('id')->on('users');
             $table->foreignId('egg_id')->references('id')->on('eggs');
-            $table->foreignId('location_id')->references('id')->on('locations');
             $table->foreignUuid('product_id')->references('id')->on('products');
             $table->timestamps();
         });

@@ -1,188 +1,169 @@
 @extends('layouts.main')
 
 @section('content')
-    <!-- CONTENT HEADER -->
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="mb-2 row">
-                <div class="col-sm-6">
-                    <h1>{{ __('Servers') }}</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Dashboard') }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('servers.index') }}">{{ __('Servers') }}</a>
-                        <li class="breadcrumb-item"><a class="text-muted"
-                                href="{{ route('servers.create') }}">{{ __('Create') }}</a>
-                        </li>
-                    </ol>
-                </div>
-            </div>
+  <!-- CONTENT HEADER -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="mb-2 row">
+        <div class="col-sm-6">
+          <h1>{{ __('Servers') }}</h1>
         </div>
-    </section>
-    <!-- END CONTENT HEADER -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Dashboard') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('servers.index') }}">{{ __('Servers') }}</a>
+            <li class="breadcrumb-item"><a class="text-muted"
+                                           href="{{ route('servers.create') }}">{{ __('Create') }}</a>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- END CONTENT HEADER -->
 
-    <!-- MAIN CONTENT -->
-    <section x-data="serverApp()" class="content">
-        <div class="container-xxl">
-            <!-- FORM -->
-            <form action="{{ route('servers.store') }}" x-on:submit="submitClicked = true" method="post"
-                class="row justify-content-center" id="serverForm">
-                @csrf
-                <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title"><i class="mr-2 fas fa-cogs"></i>{{ __('Server configuration') }}
-                            </div>
-                        </div>
-                        @if (!$server_creation_enabled)
-                            <div class="p-2 m-2 alert alert-warning">
-                                {{ __('The creation of new servers has been disabled for regular users, enable it again') }}
-                                <a href="{{ route('admin.settings.index', '#Server') }}">{{ __('here') }}</a>.
-                            </div>
-                        @endif
-                        @if ($productCount === 0 || $nodeCount === 0 || count($nests) === 0 || count($eggs) === 0)
-                            <div class="p-2 m-2 alert alert-danger">
-                                <h5><i class="icon fas fa-exclamation-circle"></i>{{ __('Error!') }}</h5>
-                                <p class="pl-4">
-                                    @if (Auth::user()->hasRole('Admin'))
-                                        {{ __('Make sure to link your products to nodes and eggs.') }} <br>
-                                        {{ __('There has to be at least 1 valid product for server creation') }}
-                                        <a href="{{ route('admin.overview.sync') }}">{{ __('Sync now') }}</a>
-                                    @endif
+  <!-- MAIN CONTENT -->
+  <section x-data="serverApp()" class="content">
+    <div class="container-xxl">
+      <!-- FORM -->
+      <form action="{{ route('servers.store') }}" x-on:submit="submitClicked = true" method="post"
+            class="row justify-content-center" id="serverForm">
+        @csrf
+        <div class="col-xl-6 col-lg-8 col-md-8 col-sm-10">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="mr-2 fas fa-cogs"></i>{{ __('Server configuration') }}
+              </div>
+            </div>
+            @if (!$server_creation_enabled)
+              <div class="p-2 m-2 alert alert-warning">
+                {{ __('The creation of new servers has been disabled for regular users, enable it again') }}
+                <a href="{{ route('admin.settings.index', '#Server') }}">{{ __('here') }}</a>.
+              </div>
+            @endif
+            @if ($productCount === 0 || $nodeCount === 0 || count($eggs) === 0)
+              <div class="p-2 m-2 alert alert-danger">
+                <h5><i class="icon fas fa-exclamation-circle"></i>{{ __('Error!') }}</h5>
+                <p class="pl-4">
+                  @if (Auth::user()->hasRole('Admin'))
+                    {{ __('Make sure to link your products to nodes and eggs.') }} <br>
+                    {{ __('There has to be at least 1 valid product for server creation') }}
+                    <a href="{{ route('admin.overview.sync') }}">{{ __('Sync now') }}</a>
+                  @endif
 
-                                </p>
-                                <ul>
-                                    @if ($productCount === 0)
-                                        <li> {{ __('No products available!') }}</li>
-                                    @endif
+                </p>
+                <ul>
+                  @if ($productCount === 0)
+                    <li> {{ __('No products available!') }}</li>
+                  @endif
 
-                                    @if ($nodeCount === 0)
-                                        <li>{{ __('No nodes have been linked!') }}</li>
-                                    @endif
+                  @if ($nodeCount === 0)
+                    <li>{{ __('No nodes have been linked!') }}</li>
+                  @endif
 
-                                    @if (count($nests) === 0)
-                                        <li>{{ __('No nests available!') }}</li>
-                                    @endif
-
-                                    @if (count($eggs) === 0)
-                                        <li>{{ __('No eggs have been linked!') }}</li>
-                                    @endif
-                                </ul>
-                            </div>
-                        @endif
-
-
-                        <div x-show="loading" class="overlay dark">
-                            <i class="fas fa-2x fa-sync-alt"></i>
-                        </div>
-
-                        <div class="card-body">
-                            @if ($errors->any())
-                                <div class="alert alert-danger">
-                                    <ul class="pl-3 list-group">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-
-                            <div class="form-group">
-                                <label for="name">{{ __('Name') }}</label>
-                                <input x-model="name" id="name" name="name" type="text" required="required"
-                                    class="form-control @error('name') is-invalid @enderror">
-                                @error('name')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="nest">{{ __('Software / Games') }}</label>
-                                        <select class="custom-select" required name="nest" id="nest"
-                                            x-model="selectedNest" @change="setEggs();">
-                                            <option selected disabled hidden value="null">
-                                                {{ count($nests) > 0 ? __('Please select software ...') : __('---') }}
-                                            </option>
-                                            @foreach ($nests as $nest)
-                                                <option value="{{ $nest->id }}">{{ $nest->name }}</option>
-                                            @endforeach
-                                        </select>
-
-                                    </div>
-                                </div>
+                  @if (count($eggs) === 0)
+                    <li>{{ __('No eggs have been linked!') }}</li>
+                  @endif
+                </ul>
+              </div>
+            @endif
 
 
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="egg">{{ __('Specification ') }}</label>
-                                        <div>
-                                            <select id="egg" required name="egg" :disabled="eggs.length == 0"
-                                                x-model="selectedEgg" @change="fetchLocations();" required="required"
-                                                class="custom-select">
-                                                <option x-text="getEggInputText()" selected disabled hidden value="null">
-                                                </option>
-                                                <template x-for="egg in eggs" :key="egg.id">
-                                                    <option x-text="egg.name" :value="egg.id"></option>
-                                                </template>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <div x-show="loading" class="overlay dark">
+              <i class="fas fa-2x fa-sync-alt"></i>
+            </div>
 
-                            <div class="form-group">
-                                <label for="location">{{ __('Location') }}</label>
-                                @if ($location_description_enabled)
-                                    <i x-show="locationDescription != null" data-toggle="popover" data-trigger="click"
-                                        x-bind:data-content="locationDescription" class="fas fa-info-circle"></i>
-                                @endif
-                                <select name="location" required id="location" x-model="selectedLocation"
-                                    :disabled="!fetchedLocations" @change="fetchProducts();" class="custom-select">
-                                    <option x-text="getLocationInputText()" disabled selected hidden value="null">
-                                    </option>
-                                    <template x-for="location in locations" :key="location.id">
-                                        <option x-text="location.name" :value="location.id">
-                                        </option>
-                                    </template>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="billing_priority">
-                                    {{ __('Billing Priority') }}
-                                    <i data-toggle="popover" data-trigger="hover"
-                                        data-content="{{ __('Defines the priority for server billing. If not provided, the value of selected product will be used.') }}"
-                                        class="fas fa-info-circle"></i>
-                                </label>
-                                <select id="billing_priority" style="width:100%" class="custom-select"
-                                    name="billing_priority" required autocomplete="off"
-                                    @error('billing_priority') is-invalid @enderror>
-                                    <option value="" selected>
-                                        {{ __('Select') }}
-                                    </option>
-                                    @foreach (App\Enums\BillingPriority::cases() as $priority)
-                                        <option value="{{ $priority->value }}">
-                                            {{ $priority->label() }} - {{ $priority->description() }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+            <div class="card-body">
+              @if ($errors->any())
+                <div class="alert alert-danger">
+                  <ul class="pl-3 list-group">
+                    @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+              @endif
 
-                            <template
-                                x-if="selectedProduct != null && selectedProduct != '' && locations.length == 0 && !loading">
-                                <div class="p-2 m-2 alert alert-danger">
-                                    {{ __('There seem to be no nodes available for this specification. Admins have been notified. Please try again later of contact us.') }}
-                                </div>
-                            </template>
-                        </div>
-                    </div>
+              <div class="form-group">
+                <label for="name">{{ __('Name') }}</label>
+                <input x-model="name" id="name" name="name" type="text" required="required"
+                       class="form-control @error('name') is-invalid @enderror">
+                @error('name')
+                <div class="invalid-feedback">
+                  {{ $message }}
+                </div>
+                @enderror
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="tags">{{ __('Software / Games') }}</label>
+                    <select class="custom-select" required name="tags" id="tags"
+                            x-model="selectedTag" @change="setEggs();">
+                      <option selected disabled hidden value="null">
+                        {{ count($tags) > 0 ? __('Please select software ...') : __('---') }}
+                      </option>
+                      @foreach ($tags as $tag)
+                        <option value="{{ $tag }}">
+                          {{ ucfirst($tag) }}
+                        </option>
+                      @endforeach
+                    </select>
+                  </div>
                 </div>
 
-                <div class="w-100"></div>
-                <div class="col" x-show="selectedLocation != null" x-data="{
+
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="egg">{{ __('Specification ') }}</label>
+                    <div>
+                      <select id="egg" required name="egg" :disabled="eggs.length == 0"
+                              x-model="selectedEgg" @change="fetchProducts();" required="required"
+                              class="custom-select">
+                        <option x-text="getEggInputText()" selected disabled hidden value="null">
+                        </option>
+                        <template x-for="egg in eggs" :key="egg.id">
+                          <option x-text="egg.name" :value="egg.id"></option>
+                        </template>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="billing_priority">
+                  {{ __('Billing Priority') }}
+                  <i data-toggle="popover" data-trigger="hover"
+                     data-content="{{ __('Defines the priority for server billing. If not provided, the value of selected product will be used.') }}"
+                     class="fas fa-info-circle"></i>
+                </label>
+                <select id="billing_priority" style="width:100%" class="custom-select"
+                        name="billing_priority" required autocomplete="off"
+                        @error('billing_priority') is-invalid @enderror>
+                  <option value="" selected>
+                    {{ __('Select') }}
+                  </option>
+                  @foreach (App\Enums\BillingPriority::cases() as $priority)
+                    <option value="{{ $priority->value }}">
+                      {{ $priority->label() }} - {{ $priority->description() }}
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+
+              <template
+                x-if="selectedProduct != null && selectedProduct != '' && hasNoAvailableNodes() && !loading">
+                <div class="p-2 m-2 alert alert-danger">
+                  {{ __('There seem to be no nodes available for this specification. Admins have been notified. Please try again later of contact us.') }}
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-100"></div>
+        <div class="col" x-show="selectedEgg != null" x-data="{
                     billingPeriodTranslations: {
                         'monthly': '{{ __('per Month') }}',
                         'half-annually': '{{ __('per 6 Months') }}',
@@ -193,397 +174,338 @@
                         'hourly': '{{ __('per Hour') }}'
                     }
                 }">
-                    <div class="mt-4 row justify-content-center">
-                        <template x-for="product in products" :key="product.id">
-                            <div class="ml-2 mr-2 card col-xl-3 col-lg-3 col-md-4 col-sm-10 ">
-                                <div class="card-body d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <!-- Product Name -->
-                                        <h4 class="mb-0 card-title" x-text="product.name"></h4>
+          <div class="mt-4 row justify-content-center">
+            <template x-for="product in products" :key="product.id">
+              <div class="ml-2 mr-2 card col-xl-3 col-lg-3 col-md-4 col-sm-10 ">
+                <div class="card-body d-flex flex-column">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <!-- Product Name -->
+                    <h4 class="mb-0 card-title" x-text="product.name"></h4>
 
-                                        <!-- Server Limit and Count -->
-                                        <span class="text-muted"
-                                            x-text="product.serverlimit > 0
+                    <!-- Server Limit and Count -->
+                    <span class="text-muted"
+                          x-text="product.serverlimit > 0
                                               ? product.servers_count + ' / ' + product.serverlimit
                                               : '{{ __('No limit') }}'">
                                         </span>
-                                    </div>
+                  </div>
 
 
-                                    <div class="mt-2">
-                                        <div>
-                                            <p class="mb-1 card-text text-muted">{{ __('Resource Data:') }}</p>
+                  <div class="mt-2">
+                    <div>
+                      <p class="mb-1 card-text text-muted">{{ __('Resource Data:') }}</p>
 
 
 
-                                            <ul class="pl-0">
-                                                <li class="d-flex justify-content-between">
+                      <ul class="pl-0">
+                        <li class="d-flex justify-content-between">
                                                     <span class="d-inline-block"><i class="fas fa-microchip"></i>
                                                         {{ __('CPU') }}</span>
-                                                    <span class="d-inline-block"
-                                                        x-text="product.cpu === 0 ? '{{ __('Unlimited') }}' : product.cpu + ' {{ __('vCores') }}'"></span>
-                                                </li>
-                                                <li class="d-flex justify-content-between">
+                          <span class="d-inline-block"
+                                x-text="product.cpu === 0 ? '{{ __('Unlimited') }}' : product.cpu + ' {{ __('vCores') }}'"></span>
+                        </li>
+                        <li class="d-flex justify-content-between">
                                                     <span class="d-inline-block"><i class="fas fa-memory"></i>
                                                         {{ __('Memory') }}</span>
-                                                    <span class="d-inline-block"
-                                                        x-text="product.memory === 0 ? '{{ __('Unlimited') }}' : product.memory + ' {{ __('MB') }}'"></span>
-                                                </li>
-                                                <li class="d-flex justify-content-between">
-                                                    <div>
-                                                        <i class="fas fa-hdd"></i>
-                                                        <span class="d-inline-block">
+                          <span class="d-inline-block"
+                                x-text="product.memory === 0 ? '{{ __('Unlimited') }}' : product.memory + ' {{ __('MB') }}'"></span>
+                        </li>
+                        <li class="d-flex justify-content-between">
+                          <div>
+                            <i class="fas fa-hdd"></i>
+                            <span class="d-inline-block">
                                                             {{ __('Disk') }}
                                                         </span>
-                                                    </div>
-                                                    <span class="d-inline-block"
-                                                        x-text="product.disk === 0 ? '{{ __('Unlimited') }}' : product.disk + ' {{ __('MB') }}'"></span>
-                                                </li>
-                                                <li class="d-flex justify-content-between">
+                          </div>
+                          <span class="d-inline-block"
+                                x-text="product.disk === 0 ? '{{ __('Unlimited') }}' : product.disk + ' {{ __('MB') }}'"></span>
+                        </li>
+                        <li class="d-flex justify-content-between">
                                                     <span class="d-inline-block"><i class="fas fa-save"></i>
                                                         {{ __('Backups') }}</span>
-                                                    <span class=" d-inline-block" x-text="product.backups"></span>
-                                                </li>
-                                                <li class="d-flex justify-content-between">
+                          <span class=" d-inline-block" x-text="product.backups"></span>
+                        </li>
+                        <li class="d-flex justify-content-between">
                                                     <span class="d-inline-block"><i class="fas fa-database"></i>
                                                         {{ __('MySQL Databases') }}</span>
-                                                    <span class="d-inline-block" x-text="product.databases"></span>
-                                                </li>
-                                                <li class="d-flex justify-content-between">
+                          <span class="d-inline-block" x-text="product.databases"></span>
+                        </li>
+                        <li class="d-flex justify-content-between">
                                                     <span class="d-inline-block"><i class="fas fa-network-wired"></i>
                                                         {{ __('Additional allocations (ports)') }}</span>
-                                                    <span class="d-inline-block" x-text="product.allocations"></span>
-                                                </li>
-                                                <li class="d-flex justify-content-between">
+                          <span class="d-inline-block" x-text="product.allocations"></span>
+                        </li>
+                        <li class="d-flex justify-content-between">
                                                     <span class="d-inline-block"><i class="fas fa-clock"></i>
                                                         {{ __('Billing Period') }}</span>
 
-                                                    <span class="d-inline-block"
-                                                        x-text="billingPeriodTranslations[product.billing_period]"></span>
-                                                </li>
-                                                <li class="d-flex justify-content-between">
+                          <span class="d-inline-block"
+                                x-text="billingPeriodTranslations[product.billing_period]"></span>
+                        </li>
+                        <li class="d-flex justify-content-between">
                                                     <span class="d-inline-block">
                                                         <i class="fas fa-flag"></i>
                                                         {{ __('Billing Priority') }}
                                                     </span>
-                                                    <span class="d-inline-block"
-                                                        x-text="product.default_billing_priority_label"></span>
-                                                </li>
-                                                <li class="d-flex justify-content-between">
+                          <span class="d-inline-block"
+                                x-text="product.default_billing_priority_label"></span>
+                        </li>
+                        <li class="d-flex justify-content-between">
                                                     <span class="d-inline-block"><i class="fa fa-coins"></i>
                                                         {{ __('Minimum') }} {{ $credits_display_name }}</span>
-                                                    <span class="d-inline-block"
-                                                        x-text="product.display_minimum_credits"></span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="mt-2 mb-2">
-                                            <span class="card-text text-muted">{{ __('Description') }}</span>
-                                            <p class="card-text" style="white-space:pre-wrap"
-                                                x-text="product.description"></p>
-                                        </div>
-                                    </div>
-                                    <div class="mt-auto border rounded border-secondary">
-                                        <div class="p-2 d-flex justify-content-between">
+                          <span class="d-inline-block"
+                                x-text="product.display_minimum_credits"></span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="mt-2 mb-2">
+                      <span class="card-text text-muted">{{ __('Description') }}</span>
+                      <p class="card-text" style="white-space:pre-wrap"
+                         x-text="product.description"></p>
+                    </div>
+                  </div>
+                  <div class="mt-auto border rounded border-secondary">
+                    <div class="p-2 d-flex justify-content-between">
                                             <span class="mr-4 d-inline-block"
-                                                x-text="'{{ __('Price') }}' + ' (' + billingPeriodTranslations[product.billing_period] + ')'">
+                                                  x-text="'{{ __('Price') }}' + ' (' + billingPeriodTranslations[product.billing_period] + ')'">
                                             </span>
-                                            <span class="d-inline-block"
-                                                x-text="product.display_price + ' {{ $credits_display_name }}'"></span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <button type="button"
-                                            :disabled="(product.effective_minimum > user.credits) ||
+                      <span class="d-inline-block"
+                            x-text="product.display_price + ' {{ $credits_display_name }}'"></span>
+                    </div>
+                  </div>
+                  <div>
+                    <button type="button"
+                            :disabled="(product.effective_minimum > user.credits) ||
                                             product.doesNotFit == true ||
                                                 product.servers_count >= product.serverlimit && product.serverlimit !=
                                                 0 ||
                                                 submitClicked"
-                                            :class="(product.effective_minimum > user.credits) ||
+                            :class="(product.effective_minimum > user.credits) ||
                                             product.doesNotFit == true ||
                                                 product.servers_count >= product.serverlimit && product.serverlimit !=
                                                 0 ||
                                                 submitClicked ? 'disabled' : ''"
-                                            class="mt-2 btn btn-primary btn-block" @click="setProduct(product.id);"
-                                            x-text="product.doesNotFit == true
+                            class="mt-2 btn btn-primary btn-block" @click="setProduct(product.id);"
+                            x-text="product.doesNotFit == true
                                                     ? '{{ __('Server cant fit on this Location') }}'
                                                     : (product.servers_count >= product.serverlimit && product.serverlimit != 0
                                                         ? '{{ __('Max. Servers with configuration reached') }}'
                                                         : (product.effective_minimum > user.credits
                                                             ? '{{ __('Not enough') }} {{ $credits_display_name }}!'
                                                             : '{{ __('Create server') }}'))">
-                                        </button>
-                                        @if (env('APP_ENV') == 'local' || $store_enabled)
-                                            <template x-if="product.effective_minimum > user.credits">
-                                                <a href="{{ route('store.index') }}">
-                                                    <button type="button" class="mt-2 btn btn-warning btn-block">
-                                                        {{ __('Buy more') }} {{ $credits_display_name }}
-                                                    </button>
-                                                </a>
-                                            </template>
-                                        @endif
-                                    </div>
+                    </button>
+                    @if (env('APP_ENV') == 'local' || $store_enabled)
+                      <template x-if="product.effective_minimum > user.credits">
+                        <a href="{{ route('store.index') }}">
+                          <button type="button" class="mt-2 btn btn-warning btn-block">
+                            {{ __('Buy more') }} {{ $credits_display_name }}
+                          </button>
+                        </a>
+                      </template>
+                    @endif
+                  </div>
 
-                                </div>
-                            </div>
-                        </template>
-                    </div>
                 </div>
-
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="product" id="product" x-model="selectedProduct">
-                <input type="hidden" name="egg_variables" id="egg_variables">
-            </form>
-            <!-- END FORM -->
-
+              </div>
+            </template>
+          </div>
         </div>
-    </section>
-    <!-- END CONTENT -->
+
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="product" id="product" x-model="selectedProduct">
+        <input type="hidden" name="egg_variables" id="egg_variables">
+      </form>
+      <!-- END FORM -->
+
+    </div>
+  </section>
+  <!-- END CONTENT -->
 
 
-    <script>
-        function serverApp() {
-            return {
-                //loading
-                loading: false,
-                fetchedLocations: false,
-                fetchedProducts: false,
+  <script>
+    function serverApp() {
+      return {
+        //loading
+        loading: false,
+        fetchedProducts: false,
 
-                //input fields
-                name: null,
-                selectedNest: null,
-                selectedEgg: null,
-                selectedLocation: null,
-                selectedProduct: null,
-                locationDescription: null,
+        //input fields
+        name: null,
+        selectedTag: null,
+        selectedEgg: null,
+        selectedProduct: null,
 
-                //selected objects based on input
-                selectedNestObject: {},
-                selectedEggObject: {},
-                selectedLocationObject: {},
-                selectedProductObject: {},
+        //selected objects based on input
+        selectedEggObject: {},
+        selectedProductObject: {},
 
-                //values
-                user: {!! $user !!},
-                nests: {!! $nests !!},
-                eggsSave: {!! $eggs !!}, //store back-end eggs
-                eggs: [],
-                locations: [],
-                products: [],
+        //values
+        user: {!! $user !!},
+        tags: {!! $tags !!},
+        eggsSave: {!! $eggs !!}, //store back-end eggs
+        eggs: [],
+        products: [],
 
-                submitClicked: false,
+        submitClicked: false,
 
 
-                /**
-                 * @description set available eggs based on the selected nest
-                 * @note called whenever a nest is selected
-                 * @see selectedNest
-                 */
-                async setEggs() {
-                    this.fetchedLocations = false;
-                    this.fetchedProducts = false;
-                    this.locations = [];
-                    this.products = [];
-                    this.selectedEgg = 'null';
-                    this.selectedLocation = 'null';
-                    this.selectedProduct = null;
-                    this.locationDescription = 'null';
+        /**
+         * @description set available eggs based on the selected nest
+         * @note called whenever a nest is selected
+         * @see selectedNest
+         */
+        async setEggs() {
+          this.fetchedProducts = false;
+          this.products = [];
+          this.selectedEgg = 'null';
+          this.selectedProduct = null;
 
-                    this.eggs = this.eggsSave.filter(egg => egg.nest_id == this.selectedNest)
+          this.eggs = this.eggsSave.filter(egg => egg.tags.includes(this.selectedTag))
 
-                    //automatically select the first entry if there is only 1
-                    if (this.eggs.length === 1) {
-                        this.selectedEgg = this.eggs[0].id;
-                        await this.fetchLocations();
-                        return;
-                    }
+          //automatically select the first entry if there is only 1
+          if (this.eggs.length === 1) {
+            this.selectedEgg = this.eggs[0].id;
 
-                    this.updateSelectedObjects()
-                },
+            await this.fetchProducts();
 
-                setProduct(productId) {
-                    if (!productId) return
+            return;
+          }
 
-                    this.selectedProduct = productId;
-                    this.updateSelectedObjects();
+          this.updateSelectedObjects()
+        },
 
-                    let hasEmptyRequiredVariables = this.hasEmptyRequiredVariables(this.selectedEggObject.environment);
+        setProduct(productId) {
+          if (!productId) return
 
-                    if (hasEmptyRequiredVariables.length > 0) {
-                        this.dispatchModal(hasEmptyRequiredVariables);
-                    } else {
-                        document.getElementById('product').value = productId;
-                        document.getElementById('serverForm').submit();
-                    }
-                },
+          this.selectedProduct = productId;
+          this.updateSelectedObjects();
 
-                /**
-                 * @description fetch all available locations based on the selected egg
-                 * @note called whenever a server configuration is selected
-                 * @see selectedEg
-                 */
-                async fetchLocations() {
-                    this.loading = true;
-                    this.fetchedLocations = false;
-                    this.fetchedProducts = false;
-                    this.locations = [];
-                    this.products = [];
-                    this.selectedLocation = 'null';
-                    this.selectedProduct = 'null';
-                    this.locationDescription = null;
+          let hasEmptyRequiredVariables = this.hasEmptyRequiredVariables(this.selectedEggObject.environment);
 
-                    let response = await axios.get(`{{ route('products.locations.egg') }}/${this.selectedEgg}`)
-                        .catch(console.error)
+          if (hasEmptyRequiredVariables.length > 0) {
+            this.dispatchModal(hasEmptyRequiredVariables);
+          } else {
+            document.getElementById('product').value = productId;
+            document.getElementById('serverForm').submit();
+          }
+        },
 
-                    this.fetchedLocations = true;
-                    this.locations = response.data
+        /**
+         * @description fetch all available products based on the selected node
+         * @note called whenever a node is selected
+         * @see selectedLocation
+         */
+        async fetchProducts() {
+          this.loading = true;
+          this.fetchedProducts = false;
+          this.products = [];
+          this.selectedProduct = null;
 
-                    //automatically select the first entry if there is only 1
-                    if (this.locations.length === 1 && this.locations[0]?.nodes?.length === 1) {
-                        this.selectedLocation = this.locations[0]?.id;
+          let response = await axios.get(
+            `{{ route('products.nodes.egg') }}/${this.selectedEgg}`)
+            .catch(console.error)
 
-                        await this.fetchProducts();
-                        return;
-                    }
+          this.fetchedProducts = true;
 
-                    this.loading = false;
-                    this.updateSelectedObjects()
-                },
+          // TODO: Sortable by user chosen property (cpu, ram, disk...)
+          this.products = response.data.sort((p1, p2) => parseInt(p1.price, 10) > parseInt(p2.price, 10) &&
+            1 || -1)
 
-                /**
-                 * @description fetch all available products based on the selected node
-                 * @note called whenever a node is selected
-                 * @see selectedLocation
-                 */
-                async fetchProducts() {
-                    this.loading = true;
-                    this.fetchedProducts = false;
-                    this.products = [];
-                    this.selectedProduct = null;
+          //divide cpu by 100 for each product
+          this.products.forEach(product => {
+            product.cpu = product.cpu / 100;
+            // Determine effective minimum credits: fallback to price when stored value
+            // is missing or less than price. legacy -1 rows are covered by the comparison.
+            let minVal = parseFloat(product.minimum_credits);
+            product.effective_minimum = (product.minimum_credits === null || minVal < parseFloat(
+              product.price)) ?
+              parseFloat(product.price) :
+              minVal;
+          })
 
-                    let response = await axios.get(
-                            `{{ route('products.products.location') }}/${this.selectedEgg}/${this.selectedLocation}`)
-                        .catch(console.error)
-
-                    this.fetchedProducts = true;
-
-                    // TODO: Sortable by user chosen property (cpu, ram, disk...)
-                    this.products = response.data.sort((p1, p2) => parseInt(p1.price, 10) > parseInt(p2.price, 10) &&
-                        1 || -1)
-
-                    //divide cpu by 100 for each product
-                    this.products.forEach(product => {
-                        product.cpu = product.cpu / 100;
-                        // Determine effective minimum credits: fallback to price when stored value
-                        // is missing or less than price. legacy -1 rows are covered by the comparison.
-                        let minVal = parseFloat(product.minimum_credits);
-                        product.effective_minimum = (product.minimum_credits === null || minVal < parseFloat(
-                                product.price)) ?
-                            parseFloat(product.price) :
-                            minVal;
-                    })
-
-                    this.locationDescription = this.locations.find(location => location.id == this.selectedLocation)
-                        .description ?? null;
-                    this.loading = false;
-                    this.updateSelectedObjects()
-                },
+          this.loading = false;
+          this.updateSelectedObjects()
+        },
 
 
-                /**
-                 * @description map selected id's to selected objects
-                 * @note being used in the server info box
-                 */
-                updateSelectedObjects() {
-                    this.selectedNestObject = this.nests.find(nest => nest.id == this.selectedNest) ?? {}
-                    this.selectedEggObject = this.eggs.find(egg => egg.id == this.selectedEgg) ?? {}
+        /**
+         * @description map selected id's to selected objects
+         * @note being used in the server info box
+         */
+        updateSelectedObjects() {
+          this.selectedEggObject = this.eggs.find(egg => egg.id === this.selectedEgg) ?? {}
+          this.selectedProductObject = this.products.find(product => product.id === this.selectedProduct) ?? {}
+        },
 
-                    this.selectedLocationObject = {};
-                    this.locations.forEach(location => {
-                        if (!this.selectedLocationObject?.id) {
-                            this.selectedLocationObject = location.nodes.find(node => node.id == this
-                                .selectedLocation) ?? {};
-                        }
-                    })
+        /**
+         * @description check if all options are selected
+         * @return {boolean}
+         */
+        isFormValid() {
+          if (Object.keys(this.selectedEggObject).length === 0) return false;
+          if (Object.keys(this.selectedProductObject).length === 0) return false;
+          return !!this.name;
+        },
 
-                    this.selectedProductObject = this.products.find(product => product.id == this.selectedProduct) ?? {}
-                },
+        hasNoAvailableNodes() {
+          return this.products.length > 0 &&
+            this.products.every(p => p.doesNotFit === true);
+        },
 
-                /**
-                 * @description check if all options are selected
-                 * @return {boolean}
-                 */
-                isFormValid() {
-                    if (Object.keys(this.selectedNestObject).length === 0) return false;
-                    if (Object.keys(this.selectedEggObject).length === 0) return false;
-                    if (Object.keys(this.selectedLocationObject).length === 0) return false;
-                    if (Object.keys(this.selectedProductObject).length === 0) return false;
-                    return !!this.name;
-                },
+        hasEmptyRequiredVariables(environment) {
+          if (!environment) return [];
 
-                hasEmptyRequiredVariables(environment) {
-                    if (!environment) return [];
+          return environment.filter((variable) => {
+            const hasRequiredRule = variable.rules?.includes("required");
+            const isDefaultNull = !variable.default_value;
 
-                    return environment.filter((variable) => {
-                        const hasRequiredRule = variable.rules?.includes("required");
-                        const isDefaultNull = !variable.default_value;
+            return hasRequiredRule && isDefaultNull;
+          });
+        },
 
-                        return hasRequiredRule && isDefaultNull;
-                    });
-                },
+        getEggInputText() {
+          if (this.eggs.length > 0) {
+            return '{{ __('Please select a specification ...') }}';
+          }
 
-                getLocationInputText() {
-                    if (this.fetchedLocations) {
-                        if (this.locations.length > 0) {
-                            return '{{ __('Please select a location ...') }}';
-                        }
-                        return '{{ __('No location found matching current configuration') }}'
-                    }
-                    return '{{ __('---') }}';
-                },
+          return '{{ __('No specification available') }}';
+        },
 
-                getProductInputText() {
-                    if (this.fetchedProducts) {
-                        if (this.products.length > 0) {
-                            return '{{ __('Please select a resource ...') }}';
-                        }
-                        return '{{ __('No resources found matching current configuration') }}'
-                    }
-                    return '{{ __('---') }}';
-                },
+        getProductInputText() {
+          if (this.fetchedProducts) {
+            if (this.products.length > 0) {
+              return '{{ __('Please select a resource ...') }}';
+            }
+            return '{{ __('No resources found matching current configuration') }}'
+          }
+          return '{{ __('---') }}';
+        },
 
-                getEggInputText() {
-                    if (this.selectedNest) {
-                        return '{{ __('Please select a configuration ...') }}';
-                    }
-                    return '{{ __('---') }}';
-                },
+        getProductOptionText(product) {
+          let text = product.name + ' (' + product.description + ')';
 
-                getProductOptionText(product) {
-                    let text = product.name + ' (' + product.description + ')';
+          // Use effective_minimum for credit checks (minimum_credits is per-product; null uses price)
+          if (product.effective_minimum > this.user.credits) {
+            return '{{ __('Not enough credits!') }} | ' + text;
+          }
 
-                    // Use effective_minimum for credit checks (minimum_credits is per-product; null uses price)
-                    if (product.effective_minimum > this.user.credits) {
-                        return '{{ __('Not enough credits!') }} | ' + text;
-                    }
+          return text;
+        },
 
-                    return text;
-                },
-
-                dispatchModal(variables) {
-                    const html = variables.map(variable => {
-                        const control = variable.rules.includes('in:') ?
-                            (() => {
-                                const inValues = variable.rules.match(/in:([^|]+)/)[1].split(',');
-                                return `
+        dispatchModal(variables) {
+          const html = variables.map(variable => {
+            const control = variable.rules.includes('in:') ?
+              (() => {
+                const inValues = variable.rules.match(/in:([^|]+)/)[1].split(',');
+                return `
                                     <select name="${variable.env_variable}" id="${variable.env_variable}" required="required" class="custom-select">
                                         ${inValues.map(value => `<option value="${value}">${value}</option>`).join('')}
                                     </select>
                                 `;
-                            })() :
-                            `<input id="${variable.env_variable}" name="${variable.env_variable}" type="text" required="required" class="form-control">`;
+              })() :
+              `<input id="${variable.env_variable}" name="${variable.env_variable}" type="text" required="required" class="form-control">`;
 
-                        return `
+            return `
                             <div class="text-left form-group">
                                 <div class="d-flex justify-content-between">
                                     <label for="${variable.env_variable}">${variable.name}</label>
@@ -597,79 +519,79 @@
                                 <div id="${variable.env_variable}-error" class="mt-1"></div>
                             </div>
                         `;
-                    }).join('');
+          }).join('');
 
-                    Swal.fire({
-                        title: '{{ __('Required Variables') }}',
-                        html: html,
-                        confirmButtonText: '{{ __('Submit') }}',
-                        showCancelButton: true,
-                        cancelButtonText: '{{ __('Cancel') }}',
-                        showLoaderOnConfirm: true,
-                        preConfirm: async () => {
-                            const filledVariables = variables.map(variable => {
-                                const value = document.getElementById(variable.env_variable).value;
-                                return {
-                                    ...variable,
-                                    filled_value: value
-                                };
-                            });
+          Swal.fire({
+            title: '{{ __('Required Variables') }}',
+            html: html,
+            confirmButtonText: '{{ __('Submit') }}',
+            showCancelButton: true,
+            cancelButtonText: '{{ __('Cancel') }}',
+            showLoaderOnConfirm: true,
+            preConfirm: async () => {
+              const filledVariables = variables.map(variable => {
+                const value = document.getElementById(variable.env_variable).value;
+                return {
+                  ...variable,
+                  filled_value: value
+                };
+              });
 
-                            const response = await fetch(
-                            '{{ route('servers.validateDeploymentVariables') }}', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: JSON.stringify({
-                                    variables: filledVariables
-                                })
-                            })
+              const response = await fetch(
+                '{{ route('servers.validateDeploymentVariables') }}', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                  },
+                  body: JSON.stringify({
+                    variables: filledVariables
+                  })
+                })
 
-                            if (!response.ok) {
-                                const errorData = await response.json();
+              if (!response.ok) {
+                const errorData = await response.json();
 
-                                variables.forEach(variable => {
-                                    const errorContainer = document.getElementById(
-                                        `${variable.env_variable}-error`);
-                                    if (errorContainer) {
-                                        errorContainer.innerHTML = '';
-                                    }
-                                });
+                variables.forEach(variable => {
+                  const errorContainer = document.getElementById(
+                    `${variable.env_variable}-error`);
+                  if (errorContainer) {
+                    errorContainer.innerHTML = '';
+                  }
+                });
 
-                                if (errorData.errors) {
-                                    Object.entries(errorData.errors).forEach(([key, messages]) => {
-                                        const errorContainer = document.getElementById(`${key}-error`);
-                                        if (errorContainer) {
-                                            errorContainer.innerHTML = messages.map(message => `
+                if (errorData.errors) {
+                  Object.entries(errorData.errors).forEach(([key, messages]) => {
+                    const errorContainer = document.getElementById(`${key}-error`);
+                    if (errorContainer) {
+                      errorContainer.innerHTML = messages.map(message => `
                                         <small class="text-danger">${message}</small>
                                     `).join('');
-                                        }
-                                    });
-                                }
-
-                                return false;
-                            }
-
-                            return response.json();
-                        },
-                        didOpen: () => {
-                            $('[data-toggle="tooltip"]').tooltip();
-                        },
-                    }).then((result) => {
-                        if (result.isConfirmed && result.value.success) {
-                            let variables = result.value.variables.reduce((acc, variable) => {
-                                acc[variable.env_variable] = variable.filled_value;
-                                return acc;
-                            }, {});
-
-                            document.getElementById('egg_variables').value = JSON.stringify(variables);
-                            document.getElementById('serverForm').submit();
-                        }
-                    });
+                    }
+                  });
                 }
+
+                return false;
+              }
+
+              return response.json();
+            },
+            didOpen: () => {
+              $('[data-toggle="tooltip"]').tooltip();
+            },
+          }).then((result) => {
+            if (result.isConfirmed && result.value.success) {
+              let variables = result.value.variables.reduce((acc, variable) => {
+                acc[variable.env_variable] = variable.filled_value;
+                return acc;
+              }, {});
+
+              document.getElementById('egg_variables').value = JSON.stringify(variables);
+              document.getElementById('serverForm').submit();
             }
+          });
         }
-    </script>
+      }
+    }
+  </script>
 @endsection

@@ -352,7 +352,7 @@ class ServerController extends Controller
             $url = e(rtrim($ptero_settings->panel_url, '/'));
             $pteroId = (int) $server->pterodactyl_id;
 
-            return '<a class="text-info" target="_blank" href="' . $url . '/admin/servers/view/' . $pteroId . '">' . e($server->name) . '</a>';
+            return '<a class="text-info" target="_blank" href="' . $url . '/admin/servers/' . $pteroId . '/edit">' . e($server->name) . '</a>';
             })
             ->rawColumns(['user', 'actions', 'status', 'name'])
             ->make();

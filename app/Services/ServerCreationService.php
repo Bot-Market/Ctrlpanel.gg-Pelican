@@ -169,7 +169,7 @@ class ServerCreationService
         }
 
         // Check if the product is available in the user's location.
-        $availableNode = $this->findAvailableNode($data['location_id'], $product);
+        $availableNode = $this->findAvailableNode($product);
 
         if (!$availableNode) {
             throw new \Exception('No available nodes for this product in the selected location.');
@@ -300,10 +300,9 @@ class ServerCreationService
         return $server;
     }
 
-    private function findAvailableNode(string $locationId, Product $product): ?Node
+    private function findAvailableNode(Product $product): ?Node
     {
-        $nodes = Node::where('location_id', $locationId)
-            ->whereHas('products', fn($q) => $q->where('product_id', $product->id))
+        $nodes = Node::whereHas('products', fn($q) => $q->where('product_id', $product->id))
             ->get();
 
         $availableNodes = $nodes->reject(function ($node) use ($product) {
@@ -325,10 +324,9 @@ class ServerCreationService
      * and also a free allocation on Pterodactyl. Returns ['node' => Node, 'allocation_id' => int]
      * or null when none available.
      */
-    private function findAvailableNodeWithAllocation(string $locationId, Product $product): ?array
+    private function findAvailableNodeWithAllocation(Product $product): ?array
     {
-        $nodes = Node::where('location_id', $locationId)
-            ->whereHas('products', fn($q) => $q->where('product_id', $product->id))
+        $nodes = Node::whereHas('products', fn($q) => $q->where('product_id', $product->id))
             ->get();
 
         $availableNodes = $nodes->reject(function ($node) use ($product) {

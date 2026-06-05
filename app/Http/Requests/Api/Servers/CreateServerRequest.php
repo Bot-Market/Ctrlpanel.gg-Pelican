@@ -31,7 +31,6 @@ class CreateServerRequest extends FormRequest
             'user_id' => 'required|integer|exists:users,id',
             'product_id' => 'required|string|exists:products,id',
             'egg_id' => ['required', 'integer', 'exists:eggs,id', new EggBelongsToProduct, new ValidateEggVariables],
-            'location_id' => 'required|integer|exists:locations,id',
             'egg_variables' => 'nullable|array',
             'billing_priority' => ['nullable', Rule::enum(BillingPriority::class)],
         ];

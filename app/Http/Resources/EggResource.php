@@ -21,13 +21,10 @@ class EggResource extends JsonResource
             'docker_image' => $this->docker_image,
             'startup' => $this->startup,
             'environment' => $this->environment,
-            'nest_id' => $this->nest_id,
+            'tags' => $this->tags,
             'disabled' => $this->disabled,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
-            'nest_count' => $this->whenCounted('nest'),
-            'nest_exists' => $this->whenExistsLoaded('nest'),
-            'nest' => NestResource::make($this->whenLoaded('nest')),
         ];
     }
 }

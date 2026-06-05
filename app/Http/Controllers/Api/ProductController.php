@@ -13,12 +13,12 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class ProductController extends Controller
 {
-    const ALLOWED_INCLUDES = ['servers.user', 'eggs.nest', 'nodes.location'];
+    const ALLOWED_INCLUDES = ['servers.user'];
     const ALLOWED_FILTERS = ['name', 'description', 'price'];
 
     /**
      * Show a list of products.
-     * 
+     *
      * @param Request $request
      * @return ProductResource
      */
@@ -34,7 +34,7 @@ class ProductController extends Controller
 
     /**
      * Store a new product in the system.
-     * 
+     *
      * @param CreateProductRequest $request
      * @return ProductResource
      */
@@ -59,13 +59,13 @@ class ProductController extends Controller
 
     /**
      * Show the specified product.
-     * 
-     * @queryParam include string Comma-separated list of related resources to include. Example: servers.user,eggs.nest,nodes.location
-     * 
+     *
+     * @queryParam include string Comma-separated list of related resources to include. Example: servers.user
+     *
      * @param Request $request
      * @param string $productId
      * @return ProductResource
-     * 
+     *
      * @throws ModelNotFoundException
      */
     public function show(Request $request, string $productId)
@@ -80,11 +80,11 @@ class ProductController extends Controller
 
     /**
      * Update the specified product in the system.
-     * 
+     *
      * @param UpdateProductRequest $request
      * @param Product $product
      * @return ProductResource
-     * 
+     *
      * @throws ModelNotFoundException
      */
     public function update(UpdateProductRequest $request, Product $product)
@@ -108,11 +108,11 @@ class ProductController extends Controller
 
     /**
      * Remove the specified product from the system.
-     * 
+     *
      * @param Request $request
      * @param Product $product
      * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
-     * 
+     *
      * @throws ModelNotFoundException
      */
     public function destroy(Request $request, Product $product)

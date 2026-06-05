@@ -8,8 +8,6 @@ use App\Settings\PterodactylSettings;
 use App\Settings\GeneralSettings;
 use App\Http\Controllers\Controller;
 use App\Models\Pterodactyl\Egg;
-use App\Models\Pterodactyl\Location;
-use App\Models\Pterodactyl\Nest;
 use App\Models\Pterodactyl\Node;
 use App\Models\Payment;
 use App\Models\Product;
@@ -44,8 +42,6 @@ class OverViewController extends Controller
         $counters->put('credits', $currencyHelper->formatForDisplay(User::query()->whereHas("roles", function($q){ $q->where("id", "!=", "1"); })->sum('credits')));
         $counters->put('payments', Payment::query()->count());
         $counters->put('eggs', Egg::query()->count());
-        $counters->put('nests', Nest::query()->count());
-        $counters->put('locations', Location::query()->count());
 
         //Prepare for counting
         $counters->put('servers', collect());
@@ -156,12 +152,14 @@ class OverViewController extends Controller
         $nodes = collect();
         foreach ($DBnodes = Node::query()->get() as $DBnode) { //gets all node information and prepares the structure
             $nodeId = $DBnode['id'];
+
             if (! in_array($nodeId, $pteroNodeIds)) {
                 continue;
             } //Check if node exists on pterodactyl too, if not, skip
             $nodes->put($nodeId, collect());
             $nodes[$nodeId]->name = $DBnode['name'];
             $pteroNode = $this->pterodactyl->getNode($nodeId);
+
             $nodes[$nodeId]->usagePercent = round(max($pteroNode['allocated_resources']['memory'] / ($pteroNode['memory'] * ($pteroNode['memory_overallocate'] + 100) / 100), $pteroNode['allocated_resources']['disk'] / ($pteroNode['disk'] * ($pteroNode['disk_overallocate'] + 100) / 100)) * 100, 2);
             $counters['totalUsagePercent'] += $nodes[$nodeId]->usagePercent;
 
@@ -229,7 +227,7 @@ class OverViewController extends Controller
     }
 
     /**
-     * @description Sync locations,nodes,nests,eggs with the linked pterodactyl panel
+     * @description Sync nodes,eggs with the linked pterodactyl panel
      */
     public function syncPterodactyl()
     {

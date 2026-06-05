@@ -3,7 +3,6 @@
 namespace App\Classes;
 
 use App\Models\Pterodactyl\Egg;
-use App\Models\Pterodactyl\Nest;
 use App\Models\Pterodactyl\Node;
 use App\Models\Product;
 use App\Models\Server;
@@ -49,7 +48,7 @@ class PterodactylClient
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . $ptero_settings->user_token,
             'Content-type' => 'application/json',
-            'Accept' => 'Application/vnd.pterodactyl.v1+json',
+            'Accept' => 'Application/json',
         ])->baseUrl($ptero_settings->getUrl() . 'api' . '/');
     }
 
@@ -58,7 +57,7 @@ class PterodactylClient
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . $ptero_settings->admin_token,
             'Content-type' => 'application/json',
-            'Accept' => 'Application/vnd.pterodactyl.v1+json',
+            'Accept' => 'Application/json',
         ])->baseUrl($ptero_settings->getUrl() . 'api' . '/');
     }
 
@@ -96,15 +95,14 @@ class PterodactylClient
     }
 
     /**
-     * @param  Nest  $nest
      * @return mixed
      *
      * @throws Exception
      */
-    public function getEggs(Nest $nest)
+    public function getEggs()
     {
         try {
-            $response = $this->application->get("application/nests/{$nest->id}/eggs?include=nest,variables&per_page=" . $this->per_page_limit);
+            $response = $this->application->get("application/eggs?include=variables&per_page=" . $this->per_page_limit);
         } catch (Exception $e) {
             throw self::getException($e->getMessage());
         }
@@ -163,44 +161,6 @@ class PterodactylClient
         }
         if ($response->failed()) {
             throw self::getException('Failed to get list of servers - ', $response->status());
-        }
-
-        return $response->json()['data'];
-    }
-
-    /**
-     * @return null
-     *
-     * @throws Exception
-     */
-    public function getNests()
-    {
-        try {
-            $response = $this->application->get('application/nests?per_page=' . $this->per_page_limit);
-        } catch (Exception $e) {
-            throw self::getException($e->getMessage());
-        }
-        if ($response->failed()) {
-            throw self::getException('Failed to get nests from pterodactyl', $response->status());
-        }
-
-        return $response->json()['data'];
-    }
-
-    /**
-     * @return mixed
-     *
-     * @throws Exception
-     */
-    public function getLocations()
-    {
-        try {
-            $response = $this->application->get('application/locations?per_page=' . $this->per_page_limit);
-        } catch (Exception $e) {
-            throw self::getException($e->getMessage());
-        }
-        if ($response->failed()) {
-            throw self::getException('Failed to get locations from pterodactyl - ', $response->status());
         }
 
         return $response->json()['data'];
@@ -397,7 +357,7 @@ class PterodactylClient
     public function getServerAttributes(int $pterodactylId, bool $deleteOn404 = false)
     {
         try {
-            $response = $this->application->get("application/servers/{$pterodactylId}?include=egg,node,nest,location");
+            $response = $this->application->get("application/servers/{$pterodactylId}?include=egg,node");
         } catch (Exception $e) {
             throw self::getException($e->getMessage());
         }

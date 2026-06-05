@@ -326,13 +326,9 @@
                                     <select id="nodes" style="width:100%"
                                         class="custom-select @error('nodes') is-invalid @enderror" name="nodes[]"
                                         multiple="multiple" autocomplete="off">
-                                        @foreach ($locations as $location)
-                                            <optgroup label="{{ $location->name }}">
-                                                @foreach ($location->nodes as $node)
-                                                    <option value="{{ $node->id }}" @selected($product->nodes->contains('id', $node->id))>
-                                                        {{ $node->name }}</option>
-                                                @endforeach
-                                            </optgroup>
+                                        @foreach ($nodes as $nodeItem)
+                                        <option value="{{ $nodeItem->id }}" @selected($product->nodes->contains('id', $nodeItem->id))>
+                                          {{ $nodeItem->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('nodes')
@@ -355,16 +351,26 @@
                                     <select id="eggs" style="width:100%"
                                         class="custom-select @error('eggs') is-invalid @enderror" name="eggs[]"
                                         multiple="multiple" autocomplete="off">
-                                        @foreach ($nests as $nest)
-                                            <optgroup label="{{ $nest->name }}" class="nest-group"
-                                                data-nest-id="{{ $nest->id }}">
-                                                @foreach ($nest->eggs as $egg)
-                                                    <option class="egg-option" data-nest-id="{{ $nest->id }}"
-                                                        value="{{ $egg->id }}" @selected($product->eggs->contains('id', $egg->id))>
-                                                        {{ $egg->name }}</option>
-                                                @endforeach
-                                            </optgroup>
-                                        @endforeach
+                                      @foreach ($eggs as $tag => $items)
+                                        <optgroup label="{{ ucfirst($tag) }}" class="tag-group"
+                                                  data-tag="{{ $tag }}">
+
+                                          @foreach ($items as $item)
+                                            @php $egg = $item['egg']; @endphp
+
+                                            <option
+                                              class="egg-option"
+                                              data-tags='@json($egg->tags)'
+                                              value="{{ $egg->id }}"
+                                              @selected($product->eggs->contains('id', $egg->id))
+                                            >
+                                              {{ $egg->name }}
+                                            </option>
+
+                                          @endforeach
+
+                                        </optgroup>
+                                      @endforeach
                                     </select>
                                     @error('eggs')
                                         <div class="text-danger">{{ $message }}</div>

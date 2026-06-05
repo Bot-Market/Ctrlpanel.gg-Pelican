@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Classes\PterodactylClient;
 use App\Models\Pterodactyl\Egg;
-use App\Models\Pterodactyl\Location;
 use App\Models\Pterodactyl\Node;
 use App\Models\Product;
 use App\Models\User;
@@ -31,121 +30,82 @@ class ProductController extends Controller
     }
 
     /**
-     * @description get product locations based on selected egg
+     * @description get product based on selected egg
      *
-     * @param  Request  $request
      * @param  Egg  $egg
      * @return Collection|JsonResponse
      */
-    public function getNodesBasedOnEgg(Request $request, Egg $egg)
+    public function getProductsBasedOnEgg(Egg $egg): Collection|JsonResponse
     {
         if (is_null($egg->id)) {
-            return response()->json('Egg ID is required', '400');
+            return response()->json('Egg ID is required', 400);
         }
 
-        //get products that include this egg
+        $user = Auth::user();
+
         $products = Product::query()
-            ->with('nodes')
-            ->where('disabled', '=', false)
+            ->where('disabled', false)
             ->whereHas('eggs', function (Builder $builder) use ($egg) {
-                $builder->where('id', '=', $egg->id);
-            })->get();
+                $builder->where('id', $egg->id);
+            })
+            ->with([
+                'nodes'
+            ])
+            ->withCount(['servers' => function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }])
+            ->get();
 
-        $nodes = collect();
+        foreach ($products as $product) {
+            $product->doesNotFit = true;
 
-        //filter unique nodes
-        $products->each(function (Product $product) use ($nodes) {
-            $product->nodes->each(function (Node $node) use ($nodes) {
-                if (! $nodes->contains('id', $node->id) && ! $node->disabled) {
-                    $nodes->add($node);
+            foreach ($product->nodes as $node) {
+
+                $pteroNode = $this->pterodactyl->getNode($node->id);
+
+                $availableMemory =
+                    ($pteroNode['memory'] * ($pteroNode['memory_overallocate'] + 100) / 100)
+                    - $pteroNode['allocated_resources']['memory'];
+
+                $availableDisk =
+                    ($pteroNode['disk'] * ($pteroNode['disk_overallocate'] + 100) / 100)
+                    - $pteroNode['allocated_resources']['disk'];
+
+                if (
+                    $product->memory <= $availableMemory &&
+                    $product->disk <= $availableDisk
+                ) {
+                    $product->doesNotFit = false;
+                    break;
                 }
-            });
-        });
+            }
+        }
 
-        return $nodes;
+        return $products;
     }
 
     /**
-     * @description get product locations based on selected egg
-     *
-     * @param  Request  $request
+     * @param  Int $node
      * @param  Egg  $egg
      * @return Collection|JsonResponse
      */
-    public function getLocationsBasedOnEgg(Request $request, Egg $egg)
+    public function getProductsBasedOnNode(Egg $egg, int $node)
     {
-        $nodes = $this->getNodesBasedOnEgg($request, $egg);
-        foreach ($nodes as $key => $node) {
-            $pteroNode = $this->pterodactyl->getNode($node->id);
-            if ($pteroNode['allocated_resources']['memory'] >= ($pteroNode['memory'] * ($pteroNode['memory_overallocate'] + 100) / 100) || $pteroNode['allocated_resources']['disk'] >= ($pteroNode['disk'] * ($pteroNode['disk_overallocate'] + 100) / 100)) {
-                $nodes->forget($key);
-            }
-        }
-        $locations = collect();
-
-        //locations
-        $nodes->each(function (Node $node) use ($nodes, $locations) {
-            /** @var Location $location */
-            $location = $node->location;
-
-            if (! $locations->contains('id', $location->id)) {
-                $nodeIds = $nodes->map(function ($node) {
-                    return $node->id;
-                });
-
-                $location->nodes = $location->nodes()
-                    ->whereIn('id', $nodeIds)
-                    ->get();
-
-                $locations->add($location);
-            }
-        });
-
-        if($locations->isEmpty()){
-            // Rate limit the node full notification to 1 attempt per 30 minutes
-            RateLimiter::attempt(
-                key: 'nodes-full-warning',
-                maxAttempts: 2,
-                callback: function() {
-                    // get admin role and check users
-                    $users = User::permission("errors.view")->get();
-                    if($users){
-                        Notification::send($users,new DynamicNotification(['mail'],[],
-                            mail: (new MailMessage)->subject('Attention! All of the nodes are full!')->greeting('Attention!')->line('All nodes are full, please add more nodes')));
-
-                    }else{
-                        Log::warning("There are no nodes at all - Users couldnt be notified");
-                    }
-                 },
-                decaySeconds: 5
-            );
-        }
-
-        return $locations;
-    }
-
-    /**
-     * @param  Int $location
-     * @param  Egg  $egg
-     * @return Collection|JsonResponse
-     */
-    public function getProductsBasedOnLocation(Egg $egg, int $location)
-    {
-        if (is_null($egg->id) || is_null($location)) {
-            return response()->json('Location and Egg ID are required', 400);
+        if (is_null($egg->id) || is_null($node)) {
+            return response()->json('Node and Egg ID are required', 400);
         }
 
         $user = Auth::user();
         $products = Product::query()
             ->where('disabled', false)
-            ->whereHas('nodes', function (Builder $builder) use ($location) {
-                $builder->where('location_id', $location);
+            ->whereHas('nodes', function (Builder $builder) use ($node) {
+                $builder->where('node', $node);
             })
             ->whereHas('eggs', function (Builder $builder) use ($egg) {
                 $builder->where('id', $egg->id);
             })
-            ->with(['nodes' => function ($query) use ($location) {
-                $query->where('location_id', $location);
+            ->with(['nodes' => function ($query) use ($node) {
+                $query->where('node', $node);
             }])
             ->withCount(['servers' => function ($query) use ($user) {
                 $query->where('user_id', $user->id);

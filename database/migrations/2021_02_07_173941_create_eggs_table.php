@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('eggs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('nest_id')->references('id')->on('nests');
             $table->string('name');
+            $table->json('tags')->nullable()->after('name');
             $table->string('description');
             $table->string('docker_image');
             $table->text('startup');

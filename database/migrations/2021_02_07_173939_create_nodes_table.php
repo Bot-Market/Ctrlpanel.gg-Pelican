@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('nodes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('location_id')->references('id')->on('locations');
             $table->string('name');
             $table->string('description');
             $table->timestamps();

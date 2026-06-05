@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pterodactyl\Egg;
-use App\Models\Pterodactyl\Location;
-use App\Models\Pterodactyl\Nest;
 use App\Models\Pterodactyl\Node;
 use App\Models\Product;
 use App\Models\Server;
@@ -71,6 +69,23 @@ class ServerController extends Controller
         $this->serverCreationService = $serverCreationService;
     }
 
+    /**
+     * Get tags eggs
+     * @return mixed
+     */
+    private function getEggTags()
+    {
+        return Egg::whereHas('products', function (Builder $builder) {
+            $builder->where('disabled', false);
+        })
+            ->get()
+            ->pluck('tags')
+            ->flatten()
+            ->filter()
+            ->unique()
+            ->values();
+    }
+
     public function index(): \Illuminate\View\View
     {
         $servers = $this->getServersWithInfo();
@@ -97,12 +112,7 @@ class ServerController extends Controller
             'nodeCount' => Node::whereHas('products', function (Builder $builder) {
                 $builder->where('disabled', false);
             })->count(),
-            'nests' => Nest::whereHas('eggs', function (Builder $builder) {
-                $builder->whereHas('products', function (Builder $builder) {
-                    $builder->where('disabled', false);
-                });
-            })->get(),
-            'locations' => Location::all(),
+            'tags' => $this->getEggTags(),
             'eggs' => Egg::whereHas('products', function (Builder $builder) {
                 $builder->where('disabled', false);
             })->get(),
@@ -131,7 +141,6 @@ class ServerController extends Controller
 
         $request->validate([
             'name' => 'required|max:191',
-            'location' => 'required|exists:locations,id',
             'egg' => 'required|exists:eggs,id',
             'product' => 'required|exists:products,id',
             'egg_variables' => 'nullable|string',
@@ -145,7 +154,6 @@ class ServerController extends Controller
             $server = $this->serverCreationService->handle($user, $product, [
                 'name' => $request->input('name'),
                 'egg_id' => $request->input('egg'),
-                'location_id' => $request->input('location'),
                 'billing_priority' => $request->input('billing_priority', $product->default_billing_priority),
                 'egg_variables' => $request->input('egg_variables'),
             ]);
@@ -179,7 +187,7 @@ class ServerController extends Controller
         if ($request->has('product')) {
             $product = Product::findOrFail($request->input('product'));
 
-            $validationResult = $this->validateProductRequirements($product, $request);
+            $validationResult = $this->validateProductRequirements($product);
             if ($validationResult !== true) {
                 return redirect()->route('servers.index')
                     ->with('error', $validationResult);
@@ -194,10 +202,9 @@ class ServerController extends Controller
         return null;
     }
 
-    private function validateProductRequirements(Product $product, Request $request): string|bool
+    private function validateProductRequirements(Product $product): string|bool
     {
-        $location = $request->input('location');
-        $nodeAllocation = $this->findAvailableNodeWithAllocation($location, $product);
+        $nodeAllocation = $this->findAvailableNodeWithAllocation($product);
 
         if (!$nodeAllocation) {
             return __("The selected location does not have the required memory, disk, or is overloaded.");
@@ -265,15 +272,12 @@ class ServerController extends Controller
             }
 
             $relationships = $serverInfo['relationships'];
-            $locationAttrs = $relationships['location']['attributes'] ?? [];
             $eggAttrs = $relationships['egg']['attributes'] ?? [];
-            $nestAttrs = $relationships['nest']['attributes'] ?? [];
             $nodeAttrs = $relationships['node']['attributes'] ?? [];
 
-            $server->location = $locationAttrs['long'] ?? $locationAttrs['short'] ?? null;
             $server->egg = $eggAttrs['name'] ?? null;
-            $server->nest = $nestAttrs['name'] ?? null;
             $server->node = $nodeAttrs['name'] ?? null;
+            $server->tag = $eggAttrs['tags'][0] ?? null;
 
             if (isset($serverInfo['name']) && $server->name !== $serverInfo['name']) {
                 $server->name = $serverInfo['name'];
@@ -560,10 +564,9 @@ class ServerController extends Controller
         return $oldProduct->price - ($oldProduct->price * ($timeUsed / $billingPeriodSeconds));
     }
 
-    private function findAvailableNode(string $locationId, Product $product): ?Node
+    private function findAvailableNode(Product $product): ?Node
     {
-        $nodes = Node::where('location_id', $locationId)
-            ->whereHas('products', fn($q) => $q->where('product_id', $product->id))
+        $nodes = Node::whereHas('products', fn($q) => $q->where('product_id', $product->id))
             ->get();
 
         $availableNodes = $nodes->reject(function ($node) use ($product) {
@@ -585,10 +588,9 @@ class ServerController extends Controller
      * and also a free allocation on Pterodactyl. Returns ['node' => Node, 'allocation_id' => int]
      * or null when none available.
      */
-    private function findAvailableNodeWithAllocation(string $locationId, Product $product): ?array
+    private function findAvailableNodeWithAllocation(Product $product): ?array
     {
-        $nodes = Node::where('location_id', $locationId)
-            ->whereHas('products', fn($q) => $q->where('product_id', $product->id))
+        $nodes = Node::whereHas('products', fn($q) => $q->where('product_id', $product->id))
             ->get();
 
         $availableNodes = $nodes->reject(function ($node) use ($product) {

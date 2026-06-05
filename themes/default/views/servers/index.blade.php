@@ -47,7 +47,7 @@
 
             <div class="flex-row row d-flex justify-content-center justify-content-md-start">
                 @foreach ($servers as $server)
-                 @if($server->location && $server->node && $server->nest && $server->egg)
+                 @if($server->node && $server->egg)
                     <div class="pl-0 pr-0 col-xl-3 col-lg-5 col-md-6 col-sm-6 col-xs-12 card ml-sm-2 mr-sm-3"
                         style="max-width: 350px">
                         <div class="card-header">
@@ -70,23 +70,11 @@
                                     </div>
                                 </div>
                                 <div class="mb-2 row">
-                                    <div class="col-5">
-                                        {{ __('Location') }}:
-                                    </div>
-                                    <div class="col-7 d-flex justify-content-between align-items-center">
-                                        <span class="">{{ $server->location }}</span>
-                                        <i data-toggle="popover" data-trigger="hover"
-                                            data-content="{{ __('Node') }}: {{ $server->node }}"
-                                            class="fas fa-info-circle"></i>
-                                    </div>
-
-                                </div>
-                                <div class="mb-2 row">
                                     <div class="col-5 ">
                                         {{ __('Software') }}:
                                     </div>
                                     <div class="col-7 text-wrap">
-                                        <span>{{ $server->nest }}</span>
+                                        <span>{{ ucfirst($server->tag) }}</span>
                                     </div>
 
                                 </div>

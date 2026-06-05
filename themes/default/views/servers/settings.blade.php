@@ -197,18 +197,6 @@
                                 <div class="col-sm-12 col-md-6 mb-3 mb-md-0">
                                     <div class="row">
                                         <div class="col-sm-4 col-md-5">
-                                            <label>{{ __('Location') }}</label>
-                                        </div>
-                                        <div class="col-sm-8 col-md-7">
-                                            <span style="max-width: 250px;" class="d-inline-block text-truncate">
-                                                {{ $serverAttributes['relationships']['location']['attributes']['short'] }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12 col-md-6 mb-3 mb-md-0">
-                                    <div class="row">
-                                        <div class="col-sm-4 col-md-5">
                                             <label>{{ __('Node') }}</label>
                                         </div>
                                         <div class="col-sm-8 col-md-7">

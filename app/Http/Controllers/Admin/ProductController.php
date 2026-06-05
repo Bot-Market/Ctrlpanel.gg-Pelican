@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\BillingPriority;
 use App\Helpers\CurrencyHelper;
 use App\Http\Controllers\Controller;
-use App\Models\Pterodactyl\Location;
-use App\Models\Pterodactyl\Nest;
+use App\Models\Pterodactyl\Node;
+use App\Models\Pterodactyl\Egg;
 use App\Models\Product;
 use App\Settings\GeneralSettings;
 use App\Settings\LocaleSettings;
@@ -42,6 +42,24 @@ class ProductController extends Controller
     }
 
     /**
+     * Sort eggs by tags
+     * @return mixed
+     */
+    private function groupEggsByTags()
+    {
+        $eggs = Egg::all();
+
+        return $eggs->flatMap(function ($egg) {
+            return collect($egg->tags ?? [])->map(function ($tag) use ($egg) {
+                return [
+                    'tag' => $tag,
+                    'egg' => $egg,
+                ];
+            });
+        })->groupBy('tag');
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return Application|Factory|View
@@ -50,8 +68,8 @@ class ProductController extends Controller
     {
         $this->checkPermission(self::WRITE_PERMISSION);
         return view('admin.products.create', [
-            'locations' => Location::with('nodes')->get(),
-            'nests' => Nest::with('eggs')->get(),
+            'nodes' => Node::all(),
+            'eggs' => $this->groupEggsByTags(),
             'credits_display_name' => $general_settings->credits_display_name
         ]);
     }
@@ -63,8 +81,8 @@ class ProductController extends Controller
         return view('admin.products.create', [
             'product' => $product,
             'credits_display_name' =>  $general_settings->credits_display_name,
-            'locations' => Location::with('nodes')->get(),
-            'nests' => Nest::with('eggs')->get(),
+            'nodes' => Node::all(),
+            'eggs' => $this->groupEggsByTags(),
         ]);
     }
 
@@ -100,14 +118,19 @@ class ProductController extends Controller
             'default_billing_priority' => ['required', new Enum(BillingPriority::class)]
         ]);
 
-
         $disabled = ! is_null($request->input('disabled'));
         $oomkiller = ! is_null($request->input('oom_killer'));
         $product = Product::create(array_merge($request->all(), ['disabled' => $disabled, 'oom_killer' => $oomkiller]));
 
         //link nodes and eggs
-        $product->eggs()->attach($request->input('eggs'));
-        $product->nodes()->attach($request->input('nodes'));
+
+        $product->nodes()->attach(
+            array_map('intval', $request->input('nodes'))
+        );
+
+        $product->eggs()->attach(
+            array_map('intval', $request->input('eggs'))
+        );
 
         return redirect()->route('admin.products.index')->with('success', __('Product has been created!'));
     }
@@ -136,12 +159,13 @@ class ProductController extends Controller
      */
     public function edit(Product $product, GeneralSettings $general_settings)
     {
+
         $this->checkPermission(self::EDIT_PERMISSION);
 
         return view('admin.products.edit', [
             'product' => $product,
-            'locations' => Location::with('nodes')->get(),
-            'nests' => Nest::with('eggs')->get(),
+            'nodes' => Node::all(),
+            'eggs' => $this->groupEggsByTags(),
             'credits_display_name' => $general_settings->credits_display_name
         ]);
     }

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Pterodactyl\Nest;
 use App\Models\Product;
 
 class Egg extends Model
@@ -18,7 +17,7 @@ class Egg extends Model
 
     protected $fillable = [
         'id',
-        'nest_id',
+        'tags',
         'name',
         'description',
         'docker_image',
@@ -29,6 +28,7 @@ class Egg extends Model
 
     protected $casts = [
         'environment' => 'array',
+        'tags' => 'array',
     ];
 
     public static function boot()
@@ -42,73 +42,57 @@ class Egg extends Model
 
     public static function syncEggs()
     {
-        Nest::syncNests();
         $client = app(PterodactylClient::class);
-        Nest::all()->each(function (Nest $nest) use ($client) {
-            $eggs = $client->getEggs($nest);
+        $eggs = $client->getEggs();
 
-            foreach ($eggs as $egg) {
-                $array = [];
-                $environment = [];
+        foreach ($eggs as $egg) {
+            $array = [];
+            $environment = [];
 
-                $array['id'] = $egg['attributes']['id'];
-                $array['nest_id'] = $egg['attributes']['nest'];
-                $array['name'] = $egg['attributes']['name'];
-                $array['description'] = $egg['attributes']['description'];
-                $array['docker_image'] = $egg['attributes']['docker_image'];
-                $array['startup'] = $egg['attributes']['startup'];
-                $array['updated_at'] = now();
+            $array['id'] = $egg['attributes']['id'];
+            $array['tags'] = $egg['attributes']['tags'];
+            $array['name'] = $egg['attributes']['name'];
+            $array['description'] = $egg['attributes']['description'];
+            $array['docker_image'] = $egg['attributes']['docker_image'];
+            $array['startup'] = $egg['attributes']['startup'];
+            $array['updated_at'] = now();
 
-                //get environment variables
-                foreach ($egg['attributes']['relationships']['variables']['data'] as $variable) {
-                    $environment[] = [
-                        'name' => $variable['attributes']['name'],
-                        'description' => $variable['attributes']['description'],
-                        'default_value' => $variable['attributes']['default_value'],
-                        'env_variable' => $variable['attributes']['env_variable'],
-                        'user_viewable' => $variable['attributes']['user_viewable'],
-                        'user_editable' => $variable['attributes']['user_editable'],
-                        'rules' => $variable['attributes']['rules'],
-                    ];
-                }
-
-                $array['environment'] = $environment;
-
-                self::query()->updateOrCreate([
-                    'id' => $array['id'],
-                ], array_diff_key($array, array_flip(['id']))
-                );
+            //get environment variables
+            foreach ($egg['attributes']['relationships']['variables']['data'] as $variable) {
+                $environment[] = [
+                    'name' => $variable['attributes']['name'],
+                    'description' => $variable['attributes']['description'],
+                    'default_value' => $variable['attributes']['default_value'],
+                    'env_variable' => $variable['attributes']['env_variable'],
+                    'user_viewable' => $variable['attributes']['user_viewable'],
+                    'user_editable' => $variable['attributes']['user_editable'],
+                    'rules' => $variable['attributes']['rules'],
+                ];
             }
 
-            self::removeDeletedEggs($nest, $eggs);
-        });
+            $array['environment'] = $environment;
+
+            self::query()->updateOrCreate([
+                'id' => $array['id'],
+            ], array_diff_key($array, array_flip(['id']))
+            );
+        }
+
+        self::removeDeletedEggs($eggs);
     }
 
     /**
      * @description remove eggs that have been deleted on pterodactyl
      *
-     * @param  Nest  $nest
      * @param  array  $eggs
      */
-    private static function removeDeletedEggs(Nest $nest, array $eggs): void
+    private static function removeDeletedEggs(array $eggs): void
     {
         $ids = array_map(function ($data) {
             return $data['attributes']['id'];
         }, $eggs);
 
-        $nest->eggs()->each(function (Egg $egg) use ($ids) {
-            if (! in_array($egg->id, $ids)) {
-                $egg->delete();
-            }
-        });
-    }
-
-    /**
-     * @return BelongsTo
-     */
-    public function nest()
-    {
-        return $this->belongsTo(Nest::class);
+        self::whereNotIn('id', $ids)->delete();
     }
 
     /**

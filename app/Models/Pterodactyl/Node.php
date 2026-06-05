@@ -32,7 +32,6 @@ class Node extends Model
      */
     public static function syncNodes()
     {
-        Location::syncLocations();
         $client = app(PterodactylClient::class);
         $nodes = $client->getNodes();
 
@@ -40,7 +39,6 @@ class Node extends Model
         $nodes = array_map(function ($node) {
             return [
                 'id' => $node['attributes']['id'],
-                'location_id' => $node['attributes']['location_id'],
                 'name' => $node['attributes']['name'],
                 'description' => $node['attributes']['description'],
             ];
@@ -55,7 +53,6 @@ class Node extends Model
                 [
                     'name' => $node['name'],
                     'description' => $node['description'],
-                    'location_id' => $node['location_id'],
                     'disabled' => false,
                 ]);
         }
@@ -79,14 +76,6 @@ class Node extends Model
                 $node->delete();
             }
         });
-    }
-
-    /**
-     * @return BelongsTo
-     */
-    public function location(): BelongsTo
-    {
-        return $this->belongsTo(Location::class);
     }
 
     /**
