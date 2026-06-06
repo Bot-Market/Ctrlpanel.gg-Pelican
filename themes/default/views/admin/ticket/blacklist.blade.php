@@ -73,7 +73,7 @@
                                 </div>
                                 <div class="form-group ">
                                     <label for="reason" class="control-label">{{__("Reason")}}</label>
-                                    <input id="reason" type="text" class="form-control" name="reason" placeholder="Input Some Reason" required>
+                                    <input id="reason" type="text" class="form-control" name="reason" placeholder="{{__("Input some reason")}}" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary ticket-once">
                                     {{__('Submit')}}

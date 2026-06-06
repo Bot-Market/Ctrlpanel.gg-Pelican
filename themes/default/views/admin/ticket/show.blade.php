@@ -6,13 +6,13 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{ __('Ticket') }}</h1>
+                    <h1>{{ __('Tickets') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Dashboard') }}</a></li>
                         <li class="breadcrumb-item"><a class="text-muted"
-                                                       href="{{ route('admin.ticket.index') }}">{{ __('Ticket') }}</a>
+                                                       href="{{ route('admin.ticket.index') }}">{{ __('Tickets') }}</a>
                         </li>
                     </ol>
                 </div>

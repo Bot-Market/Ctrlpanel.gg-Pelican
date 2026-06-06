@@ -29,7 +29,7 @@
                     <h5 class="card-title"><i class="mr-2 fas fa-user-check"></i>{{__('Roles List')}}</h5>
                     @can('admin.roles.write')
                         <a href="{{route('admin.roles.create')}}" class="float-right btn btn-primary"><i
-                                class="fa fas fa-shield-alt pe-2"></i>{{__('Create role')}}</a>
+                                class="fa fas fa-shield-alt pe-2"></i> {{__('Create role')}}</a>
                     @endcan
                 </div>
             </div>

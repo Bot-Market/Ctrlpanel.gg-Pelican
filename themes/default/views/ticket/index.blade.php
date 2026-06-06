@@ -6,13 +6,13 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>{{ __('Ticket') }}</h1>
+                    <h1>{{ __('Tickets') }}</h1>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">{{ __('Dashboard') }}</a></li>
                         <li class="breadcrumb-item"><a class="text-muted"
-                                                       href="{{ route('ticket.index') }}">{{ __('Ticket') }}</a>
+                                                       href="{{ route('ticket.index') }}">{{ __('Tickets') }}</a>
                         </li>
                     </ol>
                 </div>
@@ -29,7 +29,7 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex justify-content-between">
-                                <h5 class="card-title"><i class="fas fa-ticket-alt mr-2"></i>{{__('My Ticket')}}</h5>
+                                <h5 class="card-title"><i class="fas fa-ticket-alt mr-2"></i>{{__('My Tickets')}}</h5>
                                 <a href="{{route('ticket.new')}}" class="btn btn-sm btn-primary @cannot("user.ticket.write")) disabled @endcannot">
                                     <i class="fas fa-plus mr-1"></i>{{__('New Ticket')}}</a>
                             </div>

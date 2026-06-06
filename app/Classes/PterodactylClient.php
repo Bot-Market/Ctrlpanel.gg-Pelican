@@ -37,7 +37,7 @@ class PterodactylClient
             $this->per_page_limit = $ptero_settings->per_page_limit;
             $this->allocation_limit = $server_settings->allocation_limit;
         } catch (Exception $exception) {
-            logger('Failed to construct Pterodactyl client, Settings table not available?', ['exception' => $exception]);
+            logger('Failed to construct Pelican client, Settings table not available?', ['exception' => $exception]);
         }
     }
     /**
@@ -68,30 +68,30 @@ class PterodactylClient
     {
         Log::Error('PterodactylClient: ' . $message);
         if ($status == 404) {
-            return new HttpException(404,'Resource does not exist on pterodactyl - ' . $message . ' Was a Server deleted from Pterodactyl but not from the Panel? Have an Admin Remove it from the Panel');
+            return new HttpException(404,'Resource Pelican not exist on Pelican - ' . $message . ' Was a Server deleted from Pelican but not from the Panel? Have an Admin Remove it from the Panel');
         }
 
         if ($status == 403) {
-            return new HttpException(403, 'No permission on pterodactyl, check pterodactyl token and permissions - ' . $message);
+            return new HttpException(403, 'No permission on pterodactyl, check Pelican token and permissions - ' . $message);
         }
 
         if ($status == 401) {
-            return new HttpException(401,'No pterodactyl token set - ' . $message);
+            return new HttpException(401,'No Pelican token set - ' . $message);
         }
 
         if ($status == 500) {
-            return new HttpException(500,'Pterodactyl server error - ' . $message);
+            return new HttpException(500,'Pelican server error - ' . $message);
         }
 
         if ($status == 0) {
-            return new HttpException(500, 'Unable to connect to Pterodactyl node - Please check if the node is online and accessible' . $message);
+            return new HttpException(500, 'Unable to connect to Pelican node - Please check if the node is online and accessible' . $message);
         }
 
         if ($status >= 500 && $status < 600) {
-            return new HttpException($status,'Pterodactyl node error (HTTP ' . $status . ') - ' . $message);
+            return new HttpException($status,'Pelican node error (HTTP ' . $status . ') - ' . $message);
         }
 
-        return new Exception('Request Failed, is pterodactyl set-up correctly? - ' . $message);
+        return new Exception('Request Failed, is Pelican set-up correctly? - ' . $message);
     }
 
     /**
@@ -107,7 +107,7 @@ class PterodactylClient
             throw self::getException($e->getMessage());
         }
         if ($response->failed()) {
-            throw self::getException('Failed to get eggs from pterodactyl - ', $response->status());
+            throw self::getException('Failed to get eggs from Pelican - ', $response->status());
         }
 
         return $response->json()['data'];
@@ -126,7 +126,7 @@ class PterodactylClient
             throw self::getException($e->getMessage());
         }
         if ($response->failed()) {
-            throw self::getException('Failed to get nodes from pterodactyl - ', $response->status());
+            throw self::getException('Failed to get nodes from Pelican - ', $response->status());
         }
 
         return $response->json()['data'];
@@ -215,7 +215,7 @@ class PterodactylClient
             throw self::getException($e->getMessage());
         }
         if ($response->failed()) {
-            throw self::getException('Failed to get allocations from pterodactyl - ', $response->status());
+            throw self::getException('Failed to get allocations from Pelican - ', $response->status());
         }
 
         return $response->json();
@@ -274,7 +274,7 @@ class PterodactylClient
         try {
             return $this->application->get("application/servers/external/{$externalId}");
         } catch (Exception $e) {
-            throw self::getException('Failed to get server by external_id from pterodactyl - ' . $e->getMessage());
+            throw self::getException('Failed to get server by external_id from Pelican - ' . $e->getMessage());
         }
     }
 
@@ -286,7 +286,7 @@ class PterodactylClient
             throw self::getException($e->getMessage());
         }
         if ($response->failed()) {
-            throw self::getException('Failed to suspend server from pterodactyl - ', $response->status());
+            throw self::getException('Failed to suspend server from Pelican - ', $response->status());
         }
 
         return $response;
@@ -300,14 +300,14 @@ class PterodactylClient
             throw self::getException($e->getMessage());
         }
         if ($response->failed()) {
-            throw self::getException('Failed to unsuspend server from pterodactyl - ', $response->status());
+            throw self::getException('Failed to unsuspend server from Pelican - ', $response->status());
         }
 
         return $response;
     }
 
     /**
-     * Get user by pterodactyl id
+     * Get user by Pelican id
      *
      * @param  int  $pterodactylId
      * @return mixed
@@ -320,7 +320,7 @@ class PterodactylClient
             throw self::getException($e->getMessage());
         }
         if ($response->failed()) {
-            throw self::getException('Failed to get user from pterodactyl - ', $response->status());
+            throw self::getException('Failed to get user from Pelican - ', $response->status());
         }
 
         return $response->json()['attributes'];
@@ -342,14 +342,14 @@ class PterodactylClient
             throw self::getException($e->getMessage());
         }
         if ($response->failed()) {
-            throw self::getException('Failed to update user on pterodactyl - ', $response->status());
+            throw self::getException('Failed to update user on Pelican - ', $response->status());
         }
 
         return $response;
     }
 
     /**
-     * Get serverAttributes by pterodactyl id
+     * Get serverAttributes by Pelican id
      *
      * @param  int  $pterodactylId
      * @return mixed
@@ -370,7 +370,7 @@ class PterodactylClient
 
                 return;
             } else {
-                throw self::getException('Failed to get server attributes from pterodactyl - ', $response->status());
+                throw self::getException('Failed to get server attributes from Pelican - ', $response->status());
             }
         }
 

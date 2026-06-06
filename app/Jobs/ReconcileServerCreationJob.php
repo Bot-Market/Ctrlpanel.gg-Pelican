@@ -52,7 +52,7 @@ class ReconcileServerCreationJob implements ShouldQueue
         try {
             $response = $pterodactylClient->getServerByExternalId($server->id);
         } catch (\Exception $e) {
-            Log::warning('ReconcileServerCreationJob: pterodactyl API request failed', [
+            Log::warning('ReconcileServerCreationJob: Pelican API request failed', [
                 'server_id' => $server->id,
                 'error' => $e->getMessage(),
             ]);
@@ -63,7 +63,7 @@ class ReconcileServerCreationJob implements ShouldQueue
             $attributes = $response->json()['attributes'] ?? null;
 
             if (!$attributes || !isset($attributes['id']) || !isset($attributes['identifier'])) {
-                throw new \Exception('ReconcileServerCreationJob: invalid pterodactyl server payload');
+                throw new \Exception('ReconcileServerCreationJob: invalid Pelican server payload');
             }
 
             $server->update([
@@ -94,7 +94,7 @@ class ReconcileServerCreationJob implements ShouldQueue
             return;
         }
 
-        throw new \Exception('ReconcileServerCreationJob: pterodactyl API returned non-404 failure status ' . $response->status());
+        throw new \Exception('ReconcileServerCreationJob: Pelican API returned non-404 failure status ' . $response->status());
     }
 
     public function failed(\Throwable $exception): void

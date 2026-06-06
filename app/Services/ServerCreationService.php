@@ -204,7 +204,7 @@ class ServerCreationService
         $serverAttributes = $response->json()['attributes'] ?? null;
 
         if (!$serverAttributes || !isset($serverAttributes['id']) || !isset($serverAttributes['identifier'])) {
-            throw new \Exception('Invalid response from Pterodactyl on server creation.');
+            throw new \Exception('Invalid response from Pelican on server creation.');
         }
 
         try {
@@ -284,7 +284,7 @@ class ServerCreationService
      *
      * The passed exception is intentionally only used for logging and is not rethrown
      * or further analyzed here. At this point we cannot reliably determine the remote
-     * Pterodactyl state, so we mark the server as pending reconciliation and delegate
+     * Pelican state, so we mark the server as pending reconciliation and delegate
      * detailed error handling and state correction to ReconcileServerCreationJob.
      */
     private function handleProvisionUncertain(Server $server, int $chargedPrice, \Throwable $exception): Server

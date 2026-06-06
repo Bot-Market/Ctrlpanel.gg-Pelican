@@ -471,27 +471,6 @@
           return '{{ __('No specification available') }}';
         },
 
-        getProductInputText() {
-          if (this.fetchedProducts) {
-            if (this.products.length > 0) {
-              return '{{ __('Please select a resource ...') }}';
-            }
-            return '{{ __('No resources found matching current configuration') }}'
-          }
-          return '{{ __('---') }}';
-        },
-
-        getProductOptionText(product) {
-          let text = product.name + ' (' + product.description + ')';
-
-          // Use effective_minimum for credit checks (minimum_credits is per-product; null uses price)
-          if (product.effective_minimum > this.user.credits) {
-            return '{{ __('Not enough credits!') }} | ' + text;
-          }
-
-          return text;
-        },
-
         dispatchModal(variables) {
           const html = variables.map(variable => {
             const control = variable.rules.includes('in:') ?

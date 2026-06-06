@@ -136,18 +136,18 @@ class RegisterController extends Controller
             'root_admin' => false,
             'language' => 'en',
         ]);
-        
+
         if ($response->failed()) {
-            Log::error('Pterodactyl Registration Error: ' . ($response->json()['errors'][0]['detail'] ?? 'Unknown error'));
+            Log::error('Pelican Registration Error: ' . ($response->json()['errors'][0]['detail'] ?? 'Unknown error'));
             throw ValidationException::withMessages([
-                'ptero_registration_error' => [__('Failed to create account on Pterodactyl. Please contact Support!')],
+                'ptero_registration_error' => [__('Failed to create account on Pelican. Please contact Support!')],
             ]);
         }
 
         if (!isset($response->json()['attributes']['id'])) {
-            Log::error('Pterodactyl Registration Error: Missing user ID in response');
+            Log::error('Pelican Registration Error: Missing user ID in response');
             throw ValidationException::withMessages([
-                'ptero_registration_error' => [__('Failed to create account on Pterodactyl. Please contact Support!')],
+                'ptero_registration_error' => [__('Failed to create account on Pelican. Please contact Support!')],
             ]);
         }
 

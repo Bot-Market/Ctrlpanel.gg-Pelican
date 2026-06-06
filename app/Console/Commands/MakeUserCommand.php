@@ -50,7 +50,7 @@ class MakeUserCommand extends Command
     public function handle(PterodactylSettings $ptero_settings, UserSettings $user_settings)
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
-        $ptero_id = $this->option('ptero_id') ?? $this->ask('Please specify your Pterodactyl ID.');
+        $ptero_id = $this->option('ptero_id') ?? $this->ask('Please specify your Pelican ID.');
         $password = $this->secret('password') ?? $this->ask('Please specify your password.');
 
         // Validate user input
@@ -90,7 +90,7 @@ class MakeUserCommand extends Command
             ->exists();
 
         if ($exists) {
-            $this->error('A user with this email or Pterodactyl ID already exists.');
+            $this->error('A user with this email or Pelican ID already exists.');
             return 0;
         }
 

@@ -61,17 +61,17 @@ class PterodactylSettings extends Settings
             'panel_url' => [
                 'label' => 'Panel URL',
                 'type' => 'string',
-                'description' => 'The URL to your Pterodactyl panel.',
+                'description' => 'The URL to your Pelican panel.',
             ],
             'admin_token' => [
                 'label' => 'Admin Token',
                 'type' => 'string',
-                'description' => 'The admin user token for your Pterodactyl panel.',
+                'description' => 'The admin user token for your Pelican panel.',
             ],
             'user_token' => [
                 'label' => 'User Token',
                 'type' => 'string',
-                'description' => 'The user token for your Pterodactyl panel.',
+                'description' => 'The user token for your Pelican panel.',
             ],
             'per_page_limit' => [
                 'label' => 'Per Page Limit',

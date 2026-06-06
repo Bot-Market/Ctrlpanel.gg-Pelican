@@ -263,7 +263,7 @@
             </div>
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title"><i class="mr-2 fas fa-user-check"></i>{{ __('Referals') }}
+                    <h5 class="card-title"><i class="mr-2 fas fa-user-check"></i>{{ __('Referrals') }}
                         ({{ __('referral-code') }}: {{ $user->referral_code }})</h5>
                 </div>
                 <div class="card-body table-responsive">

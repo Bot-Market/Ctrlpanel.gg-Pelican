@@ -125,7 +125,7 @@ class ImportUsersFromPteroCommand extends Command
         });
 
         $this->newLine();
-        $this->line('Done importing, you can now login using your pterodactyl credentials.');
+        $this->line('Done importing, you can now login using your Pelican credentials.');
         $this->newLine();
     }
 }

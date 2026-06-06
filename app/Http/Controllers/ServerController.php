@@ -119,7 +119,6 @@ class ServerController extends Controller
             'user' => Auth::user(),
             'server_creation_enabled' => $this->serverSettings->creation_enabled,
             'credits_display_name' => $this->generalSettings->credits_display_name,
-            'location_description_enabled' => $this->serverSettings->location_description_enabled,
             'store_enabled' => $this->generalSettings->store_enabled
         ]);
     }
@@ -207,7 +206,7 @@ class ServerController extends Controller
         $nodeAllocation = $this->findAvailableNodeWithAllocation($product);
 
         if (!$nodeAllocation) {
-            return __("The selected location does not have the required memory, disk, or is overloaded.");
+            return __("The selected node does not have the required memory, disk, or is overloaded.");
         }
 
         $user = Auth::user();
@@ -323,7 +322,7 @@ class ServerController extends Controller
             $serverInfo = $this->pterodactyl->getServerAttributes($server->pterodactyl_id);
 
             if (!$serverInfo) {
-                throw new Exception("Server not found on Pterodactyl panel");
+                throw new Exception("Server not found on Pelican panel");
             }
 
             $this->handleServerDeletion($server);
@@ -388,7 +387,6 @@ class ServerController extends Controller
             'products' => $upgradeOptions,
             'server_enable_upgrade' => $this->serverSettings->enable_upgrade,
             'credits_display_name' => $this->generalSettings->credits_display_name,
-            'location_description_enabled' => $this->serverSettings->location_description_enabled,
         ]);
     }
 
