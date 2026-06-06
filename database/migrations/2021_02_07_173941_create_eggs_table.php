@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('eggs', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->json('tags')->nullable()->after('name');
+            $table->json('tags');
             $table->string('description');
             $table->string('docker_image');
             $table->text('startup');

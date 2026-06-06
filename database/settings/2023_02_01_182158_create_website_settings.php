@@ -24,7 +24,7 @@ class CreateWebsiteSettings extends LegacySettingsMigration
         $this->migrator->add('website.show_tos', $table_exists ? $this->getOldValue("SETTINGS::SYSTEM:SHOW_TOS", false) : false);
         $this->migrator->add('website.useful_links_enabled', $table_exists ? $this->getOldValue("SETTINGS::SYSTEM:USEFULLINKS_ENABLED", true) : true);
         $this->migrator->add('website.seo_title', $table_exists ? $this->getOldValue("SETTINGS::SYSTEM:SEO_TITLE") : 'CtrlPanel.gg');
-        $this->migrator->add('website.seo_description', $table_exists ? $this->getOldValue("SETTINGS::SYSTEM:SEO_DESCRIPTION") : 'Billing software for Pterodactyl Panel.');
+        $this->migrator->add('website.seo_description', $table_exists ? $this->getOldValue("SETTINGS::SYSTEM:SEO_DESCRIPTION") : 'Billing software for Pelican Panel.');
         $this->migrator->add('website.enable_login_logo', true);
     }
 

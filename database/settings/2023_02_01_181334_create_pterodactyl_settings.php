@@ -24,19 +24,19 @@ class CreatePterodactylSettings extends LegacySettingsMigration
                 'key' => 'SETTINGS::SYSTEM:PTERODACTYL:TOKEN',
                 'value' => $this->getNewValue('admin_token', 'pterodactyl'),
                 'type' => 'string',
-                'description' => 'The admin token for the Pterodactyl panel.',
+                'description' => 'The admin token for the Pelican panel.',
             ],
             [
                 'key' => 'SETTINGS::SYSTEM:PTERODACTYL:ADMIN_USER_TOKEN',
                 'value' => $this->getNewValue('user_token', 'pterodactyl'),
                 'type' => 'string',
-                'description' => 'The user token for the Pterodactyl panel.',
+                'description' => 'The user token for the Pelican panel.',
             ],
             [
                 'key' => 'SETTINGS::SYSTEM:PTERODACTYL:URL',
                 'value' => $this->getNewValue('panel_url', 'pterodactyl'),
                 'type' => 'string',
-                'description' => 'The URL for the Pterodactyl panel.',
+                'description' => 'The URL for the Pelican panel.',
             ],
             [
                 'key' => 'SETTINGS::SYSTEM:PTERODACTYL:PER_PAGE_LIMIT',
