@@ -13,7 +13,7 @@ class PterodactylSettings extends Settings
 
     public static function group(): string
     {
-        return 'pterodactyl';
+        return 'panel';
     }
 /*
     public static function encrypted(): array
