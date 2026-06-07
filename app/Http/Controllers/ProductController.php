@@ -8,7 +8,7 @@ use App\Models\Pterodactyl\Node;
 use App\Models\Product;
 use App\Models\User;
 use App\Notifications\DynamicNotification;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ class ProductController extends Controller
 {
     private $pterodactyl;
 
-    public function __construct(PterodactylSettings $ptero_settings)
+    public function __construct(PelicanSettings $ptero_settings)
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
     }

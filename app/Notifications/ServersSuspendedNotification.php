@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -12,7 +12,7 @@ class ServersSuspendedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected $pterodactylSettings;
+    protected $pelicanSettings;
     protected $servers;
 
     /**
@@ -22,7 +22,7 @@ class ServersSuspendedNotification extends Notification implements ShouldQueue
      */
     public function __construct($servers)
     {
-        $this->pterodactylSettings = app(PterodactylSettings::class);
+        $this->pelicanSettings = app(PelicanSettings::class);
         $this->servers = $servers;
     }
 
@@ -49,7 +49,7 @@ class ServersSuspendedNotification extends Notification implements ShouldQueue
                     ->subject(__('Your servers have been suspended!'))
                     ->markdown('mail.server.suspended', [
                         'servers' => $this->servers,
-                        'pterodactylSettings' => $this->pterodactylSettings,
+                        'pelicanSettings' => $this->pelicanSettings,
                     ]);
     }
 

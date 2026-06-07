@@ -7,12 +7,12 @@ use App\Models\Server;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Pterodactyl\Node;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use Carbon\CarbonInterval;
 
 class ServerUpgradeService
 {
-    private PterodactylSettings $pterodactylSettings;
+    private PelicanSettings $pelicanSettings;
     private PterodactylClient $pterodactylClient;
 
     /**
@@ -20,8 +20,8 @@ class ServerUpgradeService
      */
     public function __construct()
     {
-        $this->pterodactylSettings = app(PterodactylSettings::class);
-        $this->pterodactylClient = app(PterodactylClient::class, [$this->pterodactylSettings]);
+        $this->pelicanSettings = app(PelicanSettings::class);
+        $this->pterodactylClient = app(PterodactylClient::class, [$this->pelicanSettings]);
     }
 
     /**
@@ -31,7 +31,7 @@ class ServerUpgradeService
      * @param Product $product
      * @param Server $server
      * @return Server
-     * 
+     *
      * @throws \Exception
      */
     public function handle(User $user, Product $product, Server $server): Server
@@ -55,7 +55,7 @@ class ServerUpgradeService
             $pterodactylServerAllocation = $pterodactylServer['allocation'];
 
             $updateServerResponse = $this->pterodactylClient->updateServerBuild($server->pterodactyl_id, $pterodactylServerAllocation, $product);
-            
+
             if ($updateServerResponse->failed()) {
                 logger()->error('Failed to update server on Pterodactyl', [
                     'pterodactyl_id' => $server->pterodactyl_id,

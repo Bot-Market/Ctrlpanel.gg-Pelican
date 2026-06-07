@@ -6,7 +6,7 @@ use App\Settings\DiscordSettings;
 use App\Settings\InvoiceSettings;
 use App\Settings\LocaleSettings;
 use App\Settings\MailSettings;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Settings\ReferralSettings;
 use App\Settings\ServerSettings;
 use App\Settings\UserSettings;
@@ -27,7 +27,7 @@ return [
         InvoiceSettings::class,
         LocaleSettings::class,
         MailSettings::class,
-        PterodactylSettings::class,
+        PelicanSettings::class,
         ReferralSettings::class,
         ServerSettings::class,
         UserSettings::class,

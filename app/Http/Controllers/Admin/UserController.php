@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\DynamicNotification;
 use App\Settings\LocaleSettings;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Classes\PterodactylClient;
 use App\Helpers\CurrencyHelper;
 use App\Settings\GeneralSettings;
@@ -54,7 +54,7 @@ class UserController extends Controller
 
     private $pterodactyl;
 
-    public function __construct(PterodactylSettings $ptero_settings)
+    public function __construct(PelicanSettings $ptero_settings)
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
     }
@@ -538,7 +538,7 @@ class UserController extends Controller
             ->editColumn('last_seen', function (User $user) {
                 return $user->last_seen ? $user->last_seen->diffForHumans() : __('Never');
             })
-            ->editColumn('name', function (User $user, PterodactylSettings $ptero_settings) {
+            ->editColumn('name', function (User $user, PelicanSettings $ptero_settings) {
                 return '<a class="text-info" target="_blank" href="' . $ptero_settings->panel_url . '/admin/users/view/' . $user->pterodactyl_id . '">' . e($user->name) . '</a>';
             })
             ->orderColumn('role', 'role_name $1')

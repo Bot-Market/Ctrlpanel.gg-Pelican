@@ -4,7 +4,7 @@ namespace App\Settings;
 
 use Spatie\LaravelSettings\Settings;
 
-class PterodactylSettings extends Settings
+class PelicanSettings extends Settings
 {
     public string $panel_url = '';
     public string $admin_token = '';
@@ -13,7 +13,7 @@ class PterodactylSettings extends Settings
 
     public static function group(): string
     {
-        return 'panel';
+        return 'pelican';
     }
 /*
     public static function encrypted(): array

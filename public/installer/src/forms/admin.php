@@ -33,8 +33,8 @@ if (isset($_POST['createUser'])) {
     $pteroID = (string) $pteroIdInt;
 
     try {
-        $panelUrl = run_console(['php', 'artisan', 'settings:get', 'PterodactylSettings', 'panel_url', '--sameline']);
-        $adminToken = run_console(['php', 'artisan', 'settings:get', 'PterodactylSettings', 'admin_token', '--sameline']);
+        $panelUrl = run_console(['php', 'artisan', 'settings:get', 'PelicanSettings', 'panel_url', '--sameline']);
+        $adminToken = run_console(['php', 'artisan', 'settings:get', 'PelicanSettings', 'admin_token', '--sameline']);
     } catch (Throwable $th) {
         wh_log("Getting Pterodactyl information failed.", 'error');
         send_error_message($th->getMessage() . " <br>Please check the installer.log file in " . dirname(__DIR__,4) . '/storage/logs' . "!");

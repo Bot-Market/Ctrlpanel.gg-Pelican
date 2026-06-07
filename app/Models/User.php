@@ -6,7 +6,7 @@ use App\Notifications\Auth\QueuedVerifyEmail;
 use App\Notifications\WelcomeMessage;
 use App\Classes\PterodactylClient;
 use App\Facades\Currency;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -100,7 +100,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         parent::__construct();
 
-        $ptero_settings = new PterodactylSettings();
+        $ptero_settings = new PelicanSettings();
         $this->pterodactyl = new PterodactylClient($ptero_settings);
     }
 

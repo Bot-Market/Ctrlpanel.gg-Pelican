@@ -17,7 +17,7 @@ use App\Http\Requests\Api\Servers\UpdateServerBuildRequest;
 use App\Http\Requests\Api\Servers\UpdateServerRequest;
 use App\Services\ServerCreationService;
 use App\Services\ServerUpgradeService;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,7 +27,7 @@ use Exception;
 
 class ServerController extends Controller
 {
-    protected PterodactylSettings $pterodactylSettings;
+    protected PelicanSettings $pelicanSettings;
     protected PterodactylClient $pterodactylClient;
 
     public function __construct(
@@ -35,8 +35,8 @@ class ServerController extends Controller
         protected ServerUpgradeService $serverUpgradeService
     )
     {
-        $this->pterodactylSettings = app(PterodactylSettings::class);
-        $this->pterodactylClient = app(PterodactylClient::class, [$this->pterodactylSettings]);
+        $this->pelicanSettings = app(PelicanSettings::class);
+        $this->pterodactylClient = app(PterodactylClient::class, [$this->pelicanSettings]);
     }
 
     public const ALLOWED_INCLUDES = ['product', 'user'];

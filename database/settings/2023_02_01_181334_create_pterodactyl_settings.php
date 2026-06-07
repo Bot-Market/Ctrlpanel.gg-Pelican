@@ -22,25 +22,25 @@ class CreatePterodactylSettings extends LegacySettingsMigration
         DB::table('settings_old')->insert([
             [
                 'key' => 'SETTINGS::SYSTEM:PTERODACTYL:TOKEN',
-                'value' => $this->getNewValue('admin_token', 'panel'),
+                'value' => $this->getNewValue('admin_token', 'pelican'),
                 'type' => 'string',
                 'description' => 'The admin token for the Pelican panel.',
             ],
             [
                 'key' => 'SETTINGS::SYSTEM:PTERODACTYL:ADMIN_USER_TOKEN',
-                'value' => $this->getNewValue('user_token', 'panel'),
+                'value' => $this->getNewValue('user_token', 'pelican'),
                 'type' => 'string',
                 'description' => 'The user token for the Pelican panel.',
             ],
             [
                 'key' => 'SETTINGS::SYSTEM:PTERODACTYL:URL',
-                'value' => $this->getNewValue('panel_url', 'panel'),
+                'value' => $this->getNewValue('panel_url', 'pelican'),
                 'type' => 'string',
                 'description' => 'The URL for the Pelican panel.',
             ],
             [
                 'key' => 'SETTINGS::SYSTEM:PTERODACTYL:PER_PAGE_LIMIT',
-                'value' => $this->getNewValue('per_page_limit', 'panel'),
+                'value' => $this->getNewValue('per_page_limit', 'pelican'),
                 'type' => 'integer',
                 'description' => 'The number of servers to show per page.',
             ],

@@ -10,7 +10,7 @@ use Exception;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Settings\ServerSettings;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -27,7 +27,7 @@ class PterodactylClient
 
     public PendingRequest $application;
 
-    public function __construct(PterodactylSettings $ptero_settings)
+    public function __construct(PelicanSettings $ptero_settings)
     {
         $server_settings = new ServerSettings();
 
@@ -43,7 +43,7 @@ class PterodactylClient
     /**
      * @return PendingRequest
      */
-    public function client(PterodactylSettings $ptero_settings)
+    public function client(PelicanSettings $ptero_settings)
     {
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . $ptero_settings->user_token,
@@ -52,7 +52,7 @@ class PterodactylClient
         ])->baseUrl($ptero_settings->getUrl() . 'api' . '/');
     }
 
-    public function clientAdmin(PterodactylSettings $ptero_settings)
+    public function clientAdmin(PelicanSettings $ptero_settings)
     {
         return Http::withHeaders([
             'Authorization' => 'Bearer ' . $ptero_settings->admin_token,

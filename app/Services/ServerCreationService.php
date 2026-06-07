@@ -11,7 +11,7 @@ use App\Jobs\PostServerCreationJob;
 use App\Jobs\ReconcileServerCreationJob;
 use App\Services\CreditService;
 use App\Settings\GeneralSettings;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Settings\ServerSettings;
 use App\Settings\UserSettings;
 use Illuminate\Support\Facades\Cache;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 class ServerCreationService
 {
-    private PterodactylSettings $pterodactylSettings;
+    private PelicanSettings $pelicanSettings;
     private UserSettings $userSettings;
     private GeneralSettings $generalSettings;
     private ServerSettings $serverSettings;
@@ -31,11 +31,11 @@ class ServerCreationService
      */
     public function __construct()
     {
-        $this->pterodactylSettings = app(PterodactylSettings::class);
+        $this->pelicanSettings = app(PelicanSettings::class);
         $this->userSettings = app(UserSettings::class);
         $this->generalSettings = app(GeneralSettings::class);
         $this->serverSettings = app(ServerSettings::class);
-        $this->pterodactylClient = app(PterodactylClient::class, [$this->pterodactylSettings]);
+        $this->pterodactylClient = app(PterodactylClient::class, [$this->pelicanSettings]);
         $this->creditService = app(CreditService::class);
     }
 

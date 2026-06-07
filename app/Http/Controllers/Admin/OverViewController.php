@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Classes\PterodactylClient;
 use App\Helpers\CurrencyHelper;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Settings\GeneralSettings;
 use App\Http\Controllers\Controller;
 use App\Models\Pterodactyl\Egg;
@@ -24,7 +24,7 @@ class OverViewController extends Controller
 
     private $pterodactyl;
 
-    public function __construct(PterodactylSettings $ptero_settings)
+    public function __construct(PelicanSettings $ptero_settings)
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
     }

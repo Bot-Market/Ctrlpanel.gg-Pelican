@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Classes\PterodactylClient;
 use App\Models\User;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Settings\UserSettings;
 use App\Traits\Referral;
 use Illuminate\Console\Command;
@@ -47,7 +47,7 @@ class MakeUserCommand extends Command
      *
      * @return int
      */
-    public function handle(PterodactylSettings $ptero_settings, UserSettings $user_settings)
+    public function handle(PelicanSettings $ptero_settings, UserSettings $user_settings)
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
         $ptero_id = $this->option('ptero_id') ?? $this->ask('Please specify your Pelican ID.');

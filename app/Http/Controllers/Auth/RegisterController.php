@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Traits\Referral;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Classes\PterodactylClient;
 use App\Helpers\CurrencyHelper;
 use App\Settings\GeneralSettings;
@@ -50,18 +50,18 @@ class RegisterController extends Controller
      * @return void
      */
     public function __construct(
-        protected PterodactylSettings $pterodactylSettings,
-        protected CurrencyHelper $currencyHelper,
-        protected GeneralSettings $generalSettings,
-        protected WebsiteSettings $websiteSettings,
-        protected UserSettings $userSettings,
-        protected ReferralSettings $referralSettings,
-        protected PterodactylClient $pterodactylClient,
+        protected PelicanSettings     $pelicanSettings,
+        protected CurrencyHelper      $currencyHelper,
+        protected GeneralSettings     $generalSettings,
+        protected WebsiteSettings     $websiteSettings,
+        protected UserSettings        $userSettings,
+        protected ReferralSettings    $referralSettings,
+        protected PterodactylClient   $pterodactylClient,
         private ProcessReferralAction $processReferralAction,
     ) {
         $this->middleware('guest');
-        $this->pterodactylSettings = $pterodactylSettings;
-        $this->pterodactylClient = new PterodactylClient($pterodactylSettings);
+        $this->pelicanSettings = $pelicanSettings;
+        $this->pterodactylClient = new PterodactylClient($pelicanSettings);
         $this->currencyHelper = $currencyHelper;
         $this->generalSettings = $generalSettings;
         $this->websiteSettings = $websiteSettings;

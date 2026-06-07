@@ -13,7 +13,7 @@ use App\Notifications\Ticket\Admin\AdminReplyNotification;
 use App\Notifications\Ticket\User\CreateNotification;
 use App\Settings\GeneralSettings;
 use App\Settings\LocaleSettings;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Settings\TicketSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -98,7 +98,7 @@ class TicketsController extends Controller
         return redirect()->route('ticket.index')->with('success', __('A ticket has been opened, ID: #') . $ticket->ticket_id);
     }
 
-    public function show($ticket_id, PterodactylSettings $ptero_settings)
+    public function show($ticket_id, PelicanSettings $ptero_settings)
     {
         $this->checkPermission(self::READ_PERMISSION);
         try {

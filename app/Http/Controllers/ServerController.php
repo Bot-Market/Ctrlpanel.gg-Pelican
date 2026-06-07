@@ -13,7 +13,7 @@ use Carbon\Carbon;
 use App\Settings\UserSettings;
 use App\Settings\ServerSettings;
 use App\Services\ServerCreationService;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Classes\PterodactylClient;
 use App\Enums\BillingPriority;
 use App\Settings\GeneralSettings;
@@ -45,7 +45,7 @@ class ServerController extends Controller
     ];
 
     private PterodactylClient $pterodactyl;
-    private PterodactylSettings $pteroSettings;
+    private PelicanSettings $pteroSettings;
     private GeneralSettings $generalSettings;
     private ServerSettings $serverSettings;
     private UserSettings $userSettings;
@@ -53,11 +53,11 @@ class ServerController extends Controller
     private ServerCreationService $serverCreationService;
 
     public function __construct(
-        PterodactylSettings $pteroSettings,
-        GeneralSettings $generalSettings,
-        ServerSettings $serverSettings,
-        UserSettings $userSettings,
-        DiscordSettings $discordSettings,
+        PelicanSettings       $pteroSettings,
+        GeneralSettings       $generalSettings,
+        ServerSettings        $serverSettings,
+        UserSettings          $userSettings,
+        DiscordSettings       $discordSettings,
         ServerCreationService $serverCreationService
     ) {
         $this->pteroSettings = $pteroSettings;

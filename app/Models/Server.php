@@ -5,7 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use App\Classes\PterodactylClient;
 use App\Enums\BillingPriority;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use GuzzleHttp\Promise\PromiseInterface;
 use Hidehalo\Nanoid\Client;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -86,7 +86,7 @@ class Server extends Model
     {
         parent::__construct();
 
-        $ptero_settings = new PterodactylSettings();
+        $ptero_settings = new PelicanSettings();
         $this->pterodactyl = new PterodactylClient($ptero_settings);
     }
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Facades\Currency;
 use App\Models\User;
 use App\Settings\UserSettings;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Classes\PterodactylClient;
 use App\Settings\DiscordSettings;
 use App\Settings\ReferralSettings;
@@ -19,7 +19,7 @@ class ProfileController extends Controller
 {
     private $pterodactyl;
 
-    public function __construct(PterodactylSettings $ptero_settings)
+    public function __construct(PelicanSettings $ptero_settings)
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
     }

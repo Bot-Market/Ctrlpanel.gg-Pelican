@@ -11,7 +11,7 @@ use App\Models\TicketComment;
 use App\Models\User;
 use App\Notifications\Ticket\User\ReplyNotification;
 use App\Settings\LocaleSettings;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -34,7 +34,7 @@ class TicketsController extends Controller
         ]);
     }
 
-    public function show($ticket_id, PterodactylSettings $ptero_settings)
+    public function show($ticket_id, PelicanSettings $ptero_settings)
     {
         $this->checkAnyPermission([self::READ_PERMISSION, self::WRITE_PERMISSION]);
         try {

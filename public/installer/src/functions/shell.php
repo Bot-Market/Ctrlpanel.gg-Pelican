@@ -78,7 +78,7 @@ function mask_sensitive_command_args(array $command): array
 
         $sensitiveSettings = [
             'MailSettings' => ['mail_password'],
-            'PterodactylSettings' => ['admin_token', 'user_token'],
+            'PelicanSettings' => ['admin_token', 'user_token'],
         ];
 
         if (isset($sensitiveSettings[$group]) && in_array($key, $sensitiveSettings[$group], true)) {

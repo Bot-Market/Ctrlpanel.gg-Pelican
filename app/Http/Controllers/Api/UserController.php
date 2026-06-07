@@ -8,7 +8,7 @@ use App\Helpers\CurrencyHelper;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Notifications\ReferralNotification;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Settings\ReferralSettings;
 use App\Settings\UserSettings;
 use App\Http\Controllers\Controller;
@@ -37,7 +37,7 @@ class UserController extends Controller
     private $currencyHelper;
     private $referralSettings;
 
-    public function __construct(PterodactylSettings $ptero_settings, ReferralSettings $referralSettings, CurrencyHelper $currencyHelper)
+    public function __construct(PelicanSettings $ptero_settings, ReferralSettings $referralSettings, CurrencyHelper $currencyHelper)
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
         $this->referralSettings = $referralSettings;
@@ -65,13 +65,13 @@ class UserController extends Controller
 
     /**
      * Show the specified user.
-     * 
+     *
      * @queryParam include string Comma-separated list of related resources to include. Example: servers.product,notifications,payments,vouchers.users,roles.permissions,discordUser
      *
      * @param  Request  $request
      * @param  int  $userId
      * @return UserResource
-     * 
+     *
      * @throws ModelNotFoundException
      */
     public function show(Request $request, int $userId)
@@ -90,7 +90,7 @@ class UserController extends Controller
      * @param  UpdateUserRequest  $request
      * @param  User  $user
      * @return UserResource
-     * 
+     *
      * @throws ValidationException
      * @throws ModelNotFoundException
      */
@@ -199,7 +199,7 @@ class UserController extends Controller
      * @param  Request  $request
      * @param  User  $user
      * @return UserResource|\Illuminate\Http\JsonResponse
-     * 
+     *
      * @throws ModelNotFoundException
      */
     public function suspend(SuspendUserRequest $request, User $user)
@@ -219,7 +219,7 @@ class UserController extends Controller
         }
 
         activity()->performedOn($user)->log($logMessage);
-        
+
         $user->suspend();
 
         return UserResource::make($user);
@@ -231,7 +231,7 @@ class UserController extends Controller
      * @param  Request  $request
      * @param  User  $user
      * @return UserResource|\Illuminate\Http\JsonResponse
-     * 
+     *
      * @throws ModelNotFoundException
      */
     public function unsuspend(UnsuspendUserRequest $request, User $user)
@@ -259,10 +259,10 @@ class UserController extends Controller
 
     /**
      * Create a new user in the system.
-     * 
+     *
      * @param CreateUserRequest  $request
      * @return UserResource
-     * 
+     *
      * @throws ValidationException
      */
     public function store(CreateUserRequest $request, UserSettings $userSettings)
@@ -329,7 +329,7 @@ class UserController extends Controller
      * @param  Request  $request
      * @param  User  $user
      * @return \Illuminate\Http\Response
-     * 
+     *
      * @throws ModelNotFoundException
      */
     public function destroy(DeleteUserRequest $request, User $user)

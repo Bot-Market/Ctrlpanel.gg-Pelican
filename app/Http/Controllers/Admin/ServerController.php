@@ -7,7 +7,7 @@ use App\Models\Server;
 use App\Models\User;
 use App\Settings\DiscordSettings;
 use App\Settings\LocaleSettings;
-use App\Settings\PterodactylSettings;
+use App\Settings\PelicanSettings;
 use App\Classes\PterodactylClient;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -39,7 +39,7 @@ class ServerController extends Controller
     ];
     private $pterodactyl;
 
-    public function __construct(PterodactylSettings $ptero_settings)
+    public function __construct(PelicanSettings $ptero_settings)
     {
         $this->pterodactyl = new PterodactylClient($ptero_settings);
     }
@@ -348,7 +348,7 @@ class ServerController extends Controller
             ->editColumn('suspended', function (Server $server) {
                 return $server->suspended ? $server->suspended->diffForHumans() : '';
             })
-            ->editColumn('name', function (Server $server, PterodactylSettings $ptero_settings) {
+            ->editColumn('name', function (Server $server, PelicanSettings $ptero_settings) {
             $url = e(rtrim($ptero_settings->panel_url, '/'));
             $pteroId = (int) $server->pterodactyl_id;
 
