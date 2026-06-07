@@ -9,7 +9,7 @@ session_start();
 //session_unset();
 //session_destroy();
 
-session_start();
+//session_start();
 
 
 if (file_exists('../../install.lock')) {
